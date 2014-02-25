@@ -1,7 +1,8 @@
 /**@constructor
  * @param
  */
-function Shape(vertex){
+function Shape( id, vertex ){
+	this.id = id;
 	this.vertex = vertex || [];
 }
 
@@ -30,9 +31,17 @@ Shape.prototype = {
 };
 
 /**@enum {Shape}*/
-var SHAPE = {
-	TRIANGLE : new Shape([0,-10, 8.66,5, -8.66,5]),
-	SQUARE : new Shape([-1,-1, -1,1, 1,1, 1,-1]),
-	PENTAGON : new Shape([0,-10, 9.51,-3.09, 5.88,8.09, -5.88,8.09, -9.51,-3.09]),
-	HEXAGON : new Shape([0,-10, 8.66,-5, 8.66,5, 0,10, -8.66,5, -8.66,-5])
-};
+var SHAPE = [
+	new Shape(0, [0,-10, 8.66,5, -8.66,5]),
+	new Shape(1, [-7.07,-7.07, -7.07,7.07, 7.07,7.07, 7.07,-7.07]),
+	new Shape(2, [0,-10, 9.51,-3.09, 5.88,8.09, -5.88,8.09, -9.51,-3.09]),
+	new Shape(3, [0,-10, 8.66,-5, 8.66,5, 0,10, -8.66,5, -8.66,-5])
+];
+
+SHAPE.TRIANGLE = 0;
+SHAPE.SQUARE = 1;
+SHAPE.PENTAGON = 2;
+SHAPE.HEXAGON = 3;
+
+
+

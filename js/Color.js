@@ -3,23 +3,22 @@
  * @param {Number} g
  * @param {Number} b
  */
-function Color(r,g,b){
+function Color( r, g, b ){
 	/** @type {Number}*/ this.r = r;
 	/** @type {Number}*/ this.g = g;
 	/** @type {Number}*/ this.b = b;
 }
 
 Color.prototype = {
-	/**Permet d'évaluer la transition entre deux couleurs
-	 * @param {Color} target
-	 * @param {Number} progress
+	/**Récupére la couleur avec une modification de la saturation/luminosités
+	 * @param {Number} value
 	 * @return {String}
 	 */
-	updateTo : function(target, progress){
+	evaluate : function( value ){
 		return Color.toString(
-			( target.r -this.r ) *progress +this.r,
-			( target.g -this.g ) *progress +this.g,
-			( target.b -this.b ) *progress +this.b
+			this.r *value,
+			this.g *value,
+			this.b *value
 		);
 	},
 
@@ -36,20 +35,33 @@ Color.prototype = {
 	clone : function(){
 		return new Color(this.r, this.g, this.b);
 	},
-
+	
+	/**Vérifie si les deux couleurs sont identiques.
+	 * @param {Color} color
+	 * @returns {Boolean}
+	 */
 	equal : function(color){
 		return this.r === color.r && this.g === color.g && this.b === color.b;
 	}
 };
 
-Color.toString = function(r, g, b){
-	return ( 16777216 + (r<<16) + (g<<8) + b ).toString(16).slice(1); 
+Color.toString = function( r, g, b ){
+	return ( 16777216 + (r<<16) + (g<<8) + (b<<0) ).toString(16).slice(1); 
 };
 
-/**@enum {Color}*/
-var COLOR = {
-	RED : new Color(255,0,0),
-	GREEN : new Color(0,255,0),
-	BLUE : new Color(0,0,255),
-	CYAN : new Color()
-};
+/**@type {Object}*/
+var COLOR = [
+	new Color(255,0,0),
+	new Color(0,255,0), 
+	new Color(0,0,255),
+	new Color(255,255,0),
+	new Color(0,255,255),
+	new Color(255,0,255)
+];
+
+COLOR.RED = 0;
+COLOR.GREEN = 1;
+COLOR.BLUE = 2;
+COLOR.YELLOW = 3;
+COLOR.CYAN = 4;
+COLOR.PURPLE = 5;
