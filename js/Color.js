@@ -26,7 +26,7 @@ Color.prototype = {
 	 * @return {String}
 	 */
 	toString : function(){
-		return ( 16777216 + (this.r<<16) + (this.g<<8) + this.b ).toString(16).slice(1); 
+		return '#'+ ( 16777216 + (this.r<<16) + (this.g<<8) + this.b ).toString(16).slice(1); 
 	},
 
 	/**Permet de récupérer une copie de la couleur.
@@ -46,7 +46,7 @@ Color.prototype = {
 };
 
 Color.toString = function( r, g, b ){
-	return ( 16777216 + (r<<16) + (g<<8) + (b<<0) ).toString(16).slice(1); 
+	return '#'+ ( 16777216 + (r<<16) + (g<<8) + (b<<0) ).toString(16).slice(1); 
 };
 
 /**@type {Object}*/

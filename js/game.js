@@ -26,18 +26,26 @@ var player = new Player(),
 var count = 0, countP = 0;
 setInterval(function(){
 	if(count<= 0){
-		count = 150;
+		count = 50;
 		em.spawn();
 	}else
 		count--;
 
 	if(countP<= 0){
-		countP = 60;
+		countP = 20;
 		
-		if(Math.random()*2<1)
+		var rand = Math.random()*10;
+		
+		if(rand < 3.5)
 			player.shape.morphing( Math.floor(Math.random() *SHAPE.length ) );
-		else
+		else if(rand < 7)
 			player.color.morphing( COLOR[ Math.floor(Math.random() *COLOR.length) ] );
+		else{
+			player.shape.morphing( Math.floor(Math.random() *SHAPE.length ) );
+			player.color.morphing( COLOR[ Math.floor(Math.random() *COLOR.length) ] );
+			
+			
+		}
 		
 	}else
 		countP--;

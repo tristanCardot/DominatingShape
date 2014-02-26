@@ -26,7 +26,7 @@ Entity.prototype = {
 	update : function(delta){
 		this.range -= this.speed *delta;
 		this.time += delta;
-		this.scale = 2 +Math.sin( this.time/100)/2;
+		this.scale = 2 +Math.sin( this.time /100) /2;
 		
 		return this.range < 0;
 	},

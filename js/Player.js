@@ -103,11 +103,11 @@ function ShapeP(id){
 	
 	for(var i=0; i<this.sides; i++){
 		this.rads.push(PI2 /this.sides *i);
-		this.values.push(.2 +( i %2 ) /20);
+		this.values.push(.1 +( i %2 ) /20);
 	}
 	
 	if(this.sides%2 === 1)
-		this.values[ this.values.length-1 ] = .225;
+		this.values[ this.values.length-1 ] = .125;
 
 	this.rads.push(PI2);
 
@@ -148,11 +148,11 @@ ShapeP.prototype = {
 
 		for(i=0; i<this.sides; i++){
 			this.targetRads.push(PI2 /this.sides *i);
-			this.targetValues.push(.2 +( i %2 ) /20);
+			this.targetValues.push(.1 +( i %2 ) /20);
 		}
 		
 		if(this.sides%2 === 1)
-			this.targetValues[ this.targetValues.length-1 ] = .225;
+			this.targetValues[ this.targetValues.length-1 ] = .125;
 		
 		this.targetRads.push(PI2);
 		
