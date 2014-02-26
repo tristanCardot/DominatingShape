@@ -1,17 +1,19 @@
 /**@constructor
  * @param
  */
-function Shape( id, vertex ){
+function Shape( id, sides ){
 	this.id = id;
-	this.vertex = vertex || [];
+	this.vertex = [];
+	
+	for(var i=0; i<sides; i++)
+		this.vertex.push(
+			Math.cos( Math.PI *2 /sides *i ) *10,
+			Math.sin( Math.PI *2 /sides *i ) *10
+		);
 }
 
 Shape.prototype = {
-	drawOnPos : function(x, y, rotation, scale){
-		CTX.translate( x, y );
-		CTX.rotate( rotation );
-		CTX.scale(scale, scale);
-		
+	draw : function(){
 		CTX.beginPath();
 		
 		CTX.moveTo( this.vertex[0], this.vertex[1] );
@@ -23,19 +25,15 @@ Shape.prototype = {
 
 		CTX.fill();
 		CTX.stroke();
-
-		CTX.scale(1/scale, 1/scale);
-		CTX.rotate( -rotation );
-		CTX.translate( -x, -y );
 	}
 };
 
 /**@enum {Shape}*/
 var SHAPE = [
-	new Shape(0, [0,-10, 8.66,5, -8.66,5]),
-	new Shape(1, [-7.07,-7.07, -7.07,7.07, 7.07,7.07, 7.07,-7.07]),
-	new Shape(2, [0,-10, 9.51,-3.09, 5.88,8.09, -5.88,8.09, -9.51,-3.09]),
-	new Shape(3, [0,-10, 8.66,-5, 8.66,5, 0,10, -8.66,5, -8.66,-5])
+	new Shape(0, 3),
+	new Shape(1, 4),
+	new Shape(2, 5),
+	new Shape(3, 6)
 ];
 
 SHAPE.TRIANGLE = 0;

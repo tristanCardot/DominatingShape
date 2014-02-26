@@ -1,21 +1,21 @@
 /**@constructor
  * @param {Number} x
  * @param {Number} y
- * @param {Object} vec
+ * @param {Number} s
  * @param {Shape} shape
  * @param {Color} color
  * @returns
  */
-function Entity(x, y, vec, shape, color){
-	this.x = x;
-	this.y = y;
-	this.vec = vec;
+function Entity(range, angle, speed, shape, color){
+	this.range = range;
+	this.angle = angle;
+	this.speed = speed;
+
 	this.shape = shape;
 	this.color = color;
 	this.strokeStyle = color.toString();
 	this.fillStyle = color.evaluate(.4);
-	this.rotation = 0;
-	this.scale = 3;
+	this.scale = 2;
 	this.time = 0;
 }
 
@@ -24,12 +24,11 @@ Entity.prototype = {
 	 * @param {Number} delta
 	 */
 	update : function(delta){
-		this.x += delta *this.vec.x;
-		this.y += delta *this.vec.y;
-		this.rotation += delta/1000;
+		this.range -= this.speed *delta;
 		this.time += delta;
-		this.scale = 2+ Math.sin(this.time/(600)) /4;
+		this.scale = 2 +Math.sin( this.time/100)/2;
 		
+		return this.range < 0;
 	},
 	
 	/**Dessine l'entitée. */
@@ -37,6 +36,14 @@ Entity.prototype = {
 		CTX.fillStyle = this.fillStyle;
 		CTX.strokeStyle = this.strokeStyle;
 
-		this.shape.drawOnPos(this.x, this.y, this.rotation, this.scale);
+		CTX.rotate( this.angle );
+		CTX.translate( this.range, 0);
+		CTX.scale(this.scale, this.scale);
+
+		this.shape.draw();
+		
+		CTX.scale(1/this.scale, 1/this.scale);
+		CTX.translate( -this.range, 0);
+		CTX.rotate( -this.angle );
 	}
 };
