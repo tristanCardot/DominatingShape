@@ -25,6 +25,19 @@ Shape.prototype = {
 
 		CTX.fill();
 		CTX.stroke();
+	},
+
+	fill : function(ctx){
+		ctx.beginPath();
+		
+		ctx.moveTo( this.vertex[0], this.vertex[1] );
+		
+		for(var i=2; i<this.vertex.length; i+=2)
+			ctx.lineTo( this.vertex[i], this.vertex[i+1] );
+		
+		ctx.closePath();
+		
+		ctx.fill();
 	}
 };
 

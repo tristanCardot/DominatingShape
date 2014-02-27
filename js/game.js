@@ -1,6 +1,7 @@
 var SIZE = 200,
 	SIZESQRT = Math.sqrt(200*200 +200*200)*1.1,
-	PI2 = Math.PI *2;
+	PI2 = Math.PI *2,
+	CTXROTATION = 0;
 
 /** @type {HTMLCanvasElement}*/
 var CANVAS = document.createElement('canvas');
@@ -49,9 +50,11 @@ setInterval(function(){
 		
 	}else
 		countP--;
-	
-	
+
+	CTXROTATION += Math.PI /600;
 	CTX.rotate(Math.PI /600);
+	
+	
 	CTX.clearRect(-SIZESQRT, -SIZESQRT, SIZESQRT*2, SIZESQRT*2);
 
 	player.update(16);

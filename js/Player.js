@@ -135,6 +135,19 @@ ShapeP.prototype = {
 		CTX.scale(1/2.2, 1/2.2);
 	},
 	
+	fill : function(ctx){
+		ctx.beginPath();
+		
+		ctx.moveTo( Math.cos(this.rads[0])*10, Math.sin(this.rads[0])*10);
+
+		for(var i=1; i<this.rads.length; i++)
+			ctx.lineTo( Math.cos(this.rads[i])*10, Math.sin(this.rads[i])*10);
+
+		ctx.closePath();
+
+		ctx.fill();
+	},
+	
 	morphing : function(id){
 		this.id = id;
 		
