@@ -1,9 +1,11 @@
 /**@constructor
+ * @param {Number} id
  * @param {Number} r
  * @param {Number} g
  * @param {Number} b
  */
-function Color( r, g, b ){
+function Color(id, r, g, b ){
+	/** @type {Number}*/ this.id = id;
 	/** @type {Number}*/ this.r = r;
 	/** @type {Number}*/ this.g = g;
 	/** @type {Number}*/ this.b = b;
@@ -33,15 +35,7 @@ Color.prototype = {
 	 * @return {Color}
 	 */
 	clone : function(){
-		return new Color(this.r, this.g, this.b);
-	},
-	
-	/**Vérifie si les deux couleurs sont identiques.
-	 * @param {Color} color
-	 * @returns {Boolean}
-	 */
-	equal : function(color){
-		return this.r === color.r && this.g === color.g && this.b === color.b;
+		return new Color(this.id, this.r, this.g, this.b);
 	}
 };
 
@@ -51,12 +45,12 @@ Color.toString = function( r, g, b ){
 
 /**@type {Object}*/
 var COLOR = [
-	new Color(255,0,0),
-	new Color(0,255,0), 
-	new Color(0,0,255),
-	new Color(255,255,0),
-	new Color(0,255,255),
-	new Color(255,0,255)
+	new Color(0, 255,0,0),
+	new Color(1, 0,255,0), 
+	new Color(2, 0,0,255),
+	new Color(3, 255,255,0),
+	new Color(4, 0,255,255),
+	new Color(5, 255,0,255)
 ];
 
 COLOR.RED = 0;

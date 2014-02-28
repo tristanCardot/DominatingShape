@@ -7,8 +7,8 @@ function Shape( id, sides ){
 	
 	for(var i=0; i<sides; i++)
 		this.vertex.push(
-			Math.cos( Math.PI *2 /sides *i ) *10,
-			Math.sin( Math.PI *2 /sides *i ) *10
+			Math.cos( Math.PI *2 /sides *i ),
+			Math.sin( Math.PI *2 /sides *i )
 		);
 }
 
@@ -20,7 +20,7 @@ Shape.prototype = {
 		
 		for(var i=2; i<this.vertex.length; i+=2)
 			CTX.lineTo( this.vertex[i], this.vertex[i+1] );
-		
+
 		CTX.closePath();
 
 		CTX.fill();

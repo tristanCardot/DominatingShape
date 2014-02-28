@@ -17,7 +17,7 @@ function Entity(range, angle, speed, shape, color){
 	this.strokeStyle = color.toString();
 	this.fillStyle = color.evaluate(.4);
 	
-	this.scale = 2;
+	this.scale = 0;
 	
 	this.phase = Entity.PHASE.SPAWN;
 	this.time = 0;
@@ -31,7 +31,7 @@ Entity.prototype = {
 		switch(this.phase){
 			case Entity.PHASE.SPAWN:
 				this.time += delta;
-				this.scale = this.time/500;
+				this.scale = this.time/57;
 				this.rotation += delta/200;
 				
 				if(this.time>1000){
@@ -45,7 +45,7 @@ Entity.prototype = {
 					this.time += delta;
 					this.rotation += delta/800;
 					
-					this.scale = 2 +Math.sin( this.time/600) /2;
+					this.scale = 17.5 +Math.sin( this.time/600) /2;
 				break;
 			case Entity.PHASE.DEAD:
 					

@@ -1,7 +1,7 @@
 function Particle(shape, color, lifeTime){
 	this.ctx = document.createElement('canvas').getContext('2d');
-	this.ctx.canvas.height = 20;
-	this.ctx.canvas.width = 20;
+	this.ctx.canvas.height = 10;
+	this.ctx.canvas.width = 10;
 	
 	this.list = [];
 	
@@ -9,23 +9,28 @@ function Particle(shape, color, lifeTime){
 	this.color = color;
 	this.lifeTime = lifeTime;
 	
-	this.drawModel;
+	this.updateCtx();
 }
 
 Particle.prototype = {
 	updateCtx : function(){
-		this.ctx.fillStyle = color.toString();
+		this.ctx.fillStyle = this.color.evaluate(.5);
 
-		this.ctx.clearRect( 0, 0, 20, 20 );
+		this.ctx.clearRect( 0, 0, 10, 10 );
+		this.ctx.translate(5,5);
+		
 		this.shape.fill( this.ctx );
+		
+		this.ctx.translate(-5, -5);
 	},
 
 	add : function( x, y, speed, vec){
 		this.list.push([
 		    x,
 		    y,
-		    speed || 2.5,
-		    vec || Math.random()*PI2
+		    speed || 0.04,
+		    vec || Math.random() *PI2,
+		    this.lifeTime
 		]);
 	},
 
@@ -33,16 +38,25 @@ Particle.prototype = {
 		for(var i=0, s; i<this.list.length; i++){
 			s = this.list[i];
 
-			s.x += Math.cos(s.vec) *s.speed;
-			s.y += Math.sin(s.vec) *s.speed;
+			s[4] -= delta;
+			
+			if( s[4] < 1 ){
+				this.list.splice( i, 1 );
+				i--;
+			
+			}else{
+				s[0] += Math.cos(s[3]) *s[2] *delta;
+				s[1] += Math.sin(s[3]) *s[2] *delta;
+			}
 		}
 	},
 
 	draw : function(){
 		for(var i=0; i<this.list.length; i++)
-			CTX.draw(this.ctx.canvas,
+			CTX.drawImage(this.ctx.canvas,
 				this.list[i][0],
 				this.list[i][1]
 			);
+		
 	}
 };

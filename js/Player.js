@@ -2,64 +2,94 @@
  * @constructor
  */
 function Player(){
-	/**@type {Shape}*/this.shape = new ShapeP(SHAPE.TRIANGLE);
-	/**@type {Color}*/this.fromColor = COLOR[0];
-	/**@type {Color}*/this.color = new ColorP(255,0,0);
+	/**@type {Shape} */this.shape = new ShapeP( SHAPE.TRIANGLE );
+	/**@type {Color} */this.color = new ColorP( COLOR.RED );
+	/**@type {Particle} */this.particle = new Particle(this.shape, this.color, 400);
+	
+	/**@type {Cursor} */this.cursor = new Cursor();
 }
 
 Player.prototype = {
 	drawBackground : function(){
-
 		var length = this.shape.rads.length -1;
 
+		CTX.rotate(this.shape.rotation);
+		
 		for(var i=0, rad, toRad; i<length; i++){
-			rad = this.shape.rads[i];
-			toRad = this.shape.rads[i+1] +0.01;
+			rad = this.shape.rads[i]-0.005;
+			toRad = this.shape.rads[i+1];
 			
 			CTX.fillStyle = this.color.evaluate( this.shape.values[i] );
 			
 			CTX.beginPath();
-			CTX.moveTo( -Math.cos(rad), -Math.sin(rad) );
-			CTX.lineTo( Math.cos(rad) *SIZESQRT, Math.sin(rad) *SIZESQRT);
-			CTX.lineTo( Math.cos( ( rad +toRad ) /2) *SIZE *2, Math.sin( ( rad +toRad ) /2 ) *SIZE *2);
-			CTX.lineTo( Math.cos(toRad) *SIZESQRT, Math.sin(toRad) *SIZESQRT);
+			CTX.moveTo( 0, 0 );
+			CTX.lineTo( Math.cos(rad) *SIZESQRT, Math.sin(rad) *SIZESQRT );
+			CTX.lineTo( Math.cos( ( rad +toRad ) /2) *SIZE *2, Math.sin( ( rad +toRad ) /2 ) *SIZE *2 );
+			CTX.lineTo( Math.cos(toRad) *SIZESQRT, Math.sin(toRad) *SIZESQRT );
 			CTX.closePath();
 			CTX.fill();
 		}
+
+		CTX.rotate(-this.shape.rotation);
 	},
 	
 	/**
 	 * @param {Number} delta
 	 */
 	update : function(delta){
+		this.shape.rotation += Math.PI/3000*delta;
+		
 		this.color.update(delta);
 		this.shape.update(delta);
+		
+		this.particle.updateCtx();
+		this.particle.update(delta);
+		
+		if(this.cursor.press){
+			this.particle.add(this.cursor.x, this.cursor.y);
+			
+			var list = em.getCollide(this.cursor.x, this.cursor.y);
+			
+			for(var i=0; i<list.length; i++){
+				if(list[i].color.id === this.color.id  &&  list[i].shape.id === this.shape.id){
+					em.remove(list[i]);
+				}
+			}
+		}
+		
 	},
 	
 	/** Dessine la forme centrale représentent le joueur. */
 	draw : function(){
 		CTX.fillStyle = this.color.evaluate(.4);
 		CTX.strokeStyle = this.color.evaluate(1);
+
 		this.shape.draw();
+		this.particle.draw();
 	}
 };
 
 /**@constructor
- * @param {Number} r 
+ * @param {Number} r
  * @param {Number} g
  * @param {Number} b
  */
-function ColorP(r, g, b){
-	this.r = r;
-	this.g = g;
-	this.b = b;
+function ColorP(id){
+	var color = COLOR[id];
+	
+	this.id = color.id
+	this.r = color.r;
+	this.g = color.g;
+	this.b = color.b;
 	
 	this.transitionDelay = 1000;
 	this.transition = 1000;
 
-	this.targetR = r;
-	this.targetG = g;
-	this.targetB = b;
+	this.targetR = color.r;
+	this.targetG = color.g;
+	this.targetB = color.b;
+	
+	delete color;
 }
 
 ColorP.prototype = Color.prototype;
@@ -74,7 +104,7 @@ ColorP.prototype.update = function(delta){
 			this.b = this.targetB;
 		
 		}else{
-			var progress = this.transition /this.transitionDelay;
+			var progress = Math.sin( this.transition /this.transitionDelay );
 			
 			this.r = ( this.targetR -this.r ) *progress +this.r;
 			this.g = ( this.targetG -this.g ) *progress +this.g;
@@ -84,6 +114,8 @@ ColorP.prototype.update = function(delta){
 };
 
 ColorP.prototype.morphing = function(target){
+	this.id = target.id;
+	
 	this.targetR = target.r;
 	this.targetG = target.g;
 	this.targetB = target.b;
@@ -100,6 +132,9 @@ function ShapeP(id){
 	
 	this.rads = [];
 	this.values = [];
+	
+	this.rotation = 0;
+	this.scale = 20;
 	
 	for(var i=0; i<this.sides; i++){
 		this.rads.push(PI2 /this.sides *i);
@@ -118,30 +153,32 @@ function ShapeP(id){
 ShapeP.prototype = {
 		
 	draw : function(){
-		CTX.scale(2.2,2.2);
+		CTX.rotate( this.rotation );
+		CTX.scale( this.scale, this.scale);
 		
 		CTX.beginPath();
 		
-		CTX.moveTo( Math.cos(this.rads[0])*10, Math.sin(this.rads[0])*10);
+		CTX.moveTo( Math.cos(this.rads[0]), Math.sin(this.rads[0]));
 
 		for(var i=1; i<this.rads.length; i++)
-			CTX.lineTo( Math.cos(this.rads[i])*10, Math.sin(this.rads[i])*10);
+			CTX.lineTo( Math.cos(this.rads[i]), Math.sin(this.rads[i]));
 
 		CTX.closePath();
 
 		CTX.fill();
 		CTX.stroke();
 		
-		CTX.scale(1/2.2, 1/2.2);
+		CTX.scale( 1 /this.scale, 1/this.scale );
+		CTX.rotate( -this.rotation );
 	},
 	
 	fill : function(ctx){
 		ctx.beginPath();
 		
-		ctx.moveTo( Math.cos(this.rads[0])*10, Math.sin(this.rads[0])*10);
+		ctx.moveTo( Math.cos(this.rads[0])*4, Math.sin(this.rads[0])*4);
 
 		for(var i=1; i<this.rads.length; i++)
-			ctx.lineTo( Math.cos(this.rads[i])*10, Math.sin(this.rads[i])*10);
+			ctx.lineTo( Math.cos(this.rads[i])*4, Math.sin(this.rads[i])*4);
 
 		ctx.closePath();
 
@@ -224,7 +261,7 @@ ShapeP.prototype = {
 						this.values.push( this.targetValues[i] );
 
 			}else{
-				var progress = this.transition /this.transitionDelay;
+				var progress = Math.sin( this.transition /this.transitionDelay );
 
 				for(; i<this.rads.length; i++)
 					this.rads[i] = (this.targetRads[i] -this.rads[i]) *progress +this.rads[i];
