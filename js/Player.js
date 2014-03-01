@@ -10,6 +10,7 @@ function Player(){
 }
 
 Player.prototype = {
+	/** Dessine le font.*/
 	drawBackground : function(){
 		var length = this.shape.rads.length -1;
 
@@ -33,7 +34,7 @@ Player.prototype = {
 		CTX.rotate(-this.shape.rotation);
 	},
 	
-	/**
+	/**Mais à jour les paramétres liés au joueur/background.
 	 * @param {Number} delta
 	 */
 	update : function(delta){
@@ -51,12 +52,27 @@ Player.prototype = {
 			var list = em.getCollide(this.cursor.x, this.cursor.y);
 			
 			for(var i=0; i<list.length; i++){
-				if(list[i].color.id === this.color.id  &&  list[i].shape.id === this.shape.id){
+				if(list[i].shape.id === this.shape.id  &&  list[i].color.id === this.color.id){
 					em.remove(list[i]);
+					
+					var target = em.getTarget();
+					
+					if(target)
+						this.morphing(target);
+						
+					break;
 				}
 			}
 		}
 		
+	},
+	
+	/**Transforme le joueur dans la couleur et forme de la prochaine cible.
+	 * @param {Entity} target
+	 */
+	morphing : function(target){
+		this.shape.morphing(target.shape);
+		this.color.morphing(target.color);
 	},
 	
 	/** Dessine la forme centrale représentent le joueur. */
@@ -69,10 +85,9 @@ Player.prototype = {
 	}
 };
 
-/**@constructor
- * @param {Number} r
- * @param {Number} g
- * @param {Number} b
+/**Couleur propre au joueur.
+ * @constructor
+ * @param {Number} id
  */
 function ColorP(id){
 	var color = COLOR[id];
@@ -94,6 +109,9 @@ function ColorP(id){
 
 ColorP.prototype = Color.prototype;
 
+/**Mais à jour l'avancement de la transition de couleur si cela est nécessaire.
+ * @param {Number} delta
+ */
 ColorP.prototype.update = function(delta){
 	if( this.transition < this.transitionDelay ){
 		this.transition += delta;
@@ -112,7 +130,9 @@ ColorP.prototype.update = function(delta){
 		}
 	}
 };
-
+/**Initialise la transition de la couleur.
+ * @param {Color} target
+ */
 ColorP.prototype.morphing = function(target){
 	this.id = target.id;
 	
@@ -123,6 +143,10 @@ ColorP.prototype.morphing = function(target){
 	this.transition = 0;
 };
 
+/**Forme propre au joueur.
+ * @param {Number} id
+ * @returns
+ */
 function ShapeP(id){
 	this.id = id;
 	this.sides = SHAPE[id].vertex.length /2;
@@ -151,7 +175,7 @@ function ShapeP(id){
 }
 
 ShapeP.prototype = {
-		
+	/**Dessine la forme du joueur.*/
 	draw : function(){
 		CTX.rotate( this.rotation );
 		CTX.scale( this.scale, this.scale);
@@ -172,6 +196,8 @@ ShapeP.prototype = {
 		CTX.rotate( -this.rotation );
 	},
 	
+	/**Dessine une version minime de la forme joueur (particle).
+	 * @param {CanvasRenderingContext2D} ctx*/
 	fill : function(ctx){
 		ctx.beginPath();
 		
@@ -185,14 +211,17 @@ ShapeP.prototype = {
 		ctx.fill();
 	},
 	
-	morphing : function(id){
-		this.id = id;
+	/**Initialise la transition de la forme.
+	 * @param {Shape} target
+	 */
+	morphing : function(target){
+		this.id = target.id;
 		
 		this.targetRads = [];
 		this.targetValues = [];
 		
 		this.transition = 0;
-		this.sides = SHAPE[id].vertex.length /2;
+		this.sides = target.vertex.length /2;
 		
 		var min,max,overflow,i,index;
 
@@ -242,7 +271,8 @@ ShapeP.prototype = {
 			}
 		}
 	},
-
+	
+	/**Mais à jour la forme si nécessaire. */
 	update : function(delta){
 		if( this.transition < this.transitionDelay ){
 			this.transition += delta;

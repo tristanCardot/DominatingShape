@@ -45,7 +45,7 @@ setInterval(function(){
 		/*if(rand < 3.5)
 			player.shape.morphing( Math.floor(Math.random() *SHAPE.length ) );
 		
-		else*/ if(rand < 7)
+		else if(rand < 7)
 			player.color.morphing( COLOR[ Math.floor(Math.random() *COLOR.length) ] );
 		
 		/*else{

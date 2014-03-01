@@ -28,6 +28,7 @@ Shape.prototype = {
 	},
 
 	fill : function(ctx){
+		ctx.scale( 5, 5 );
 		ctx.beginPath();
 		
 		ctx.moveTo( this.vertex[0], this.vertex[1] );
@@ -36,6 +37,7 @@ Shape.prototype = {
 			ctx.lineTo( this.vertex[i], this.vertex[i+1] );
 		
 		ctx.closePath();
+		ctx.scale( 1/5, 1/5 );
 		
 		ctx.fill();
 	}

@@ -52,11 +52,15 @@ Particle.prototype = {
 	},
 
 	draw : function(){
+		if( this.list.length > 0  &&  this.list[this.list.length-1][4] < 250 )
+			CTX.globalAlpha = this.list[this.list.length-1][4] /250;
+		
 		for(var i=0; i<this.list.length; i++)
 			CTX.drawImage(this.ctx.canvas,
 				this.list[i][0],
 				this.list[i][1]
 			);
 		
+		CTX.globalAlpha = 1;
 	}
 };

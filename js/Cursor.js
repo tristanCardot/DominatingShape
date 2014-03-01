@@ -1,13 +1,19 @@
+/**Représente les inputs du joueur.
+ * @constructor
+ */
 function Cursor(){
-	this.press = false;
+	/** @type {Boolean}*/ this.press = false;
 	
-	this.x = 0;
-	this.y = 0;
+	/** @type {Number}*/this.x = 0;
+	/** @type {Number}*/this.y = 0;
 	
 	this.bindEvent(this);
 }
 
 Cursor.prototype = {
+	/**Lie les événements permettant de capturer les interactions du joueur au document. 
+	 * @param {Cursor} self 
+	 */
 	bindEvent: function(self){
 		CANVAS.addEventListener('mousedown', function(e){
 			self.down(e, this);
@@ -22,22 +28,32 @@ Cursor.prototype = {
 		}, false);
 	},
 	
+	/**Lors de la pression. 
+	 * @param {Event} e 
+	 * @param {HTMLCanvasElement} node
+	 */
 	down : function(e, node){
 		this.press = true;
 		this.x = ( e.x -node.offsetWidth /2 ) /SCALE.x;
 		this.y = ( e.y -node.offsetHeight /2 ) /SCALE.y;
 	},
 	
+	/**Lors du relachement. 
+	 * @param {Event} e 
+	 * @param {HTMLCanvasElement} node
+	 */
 	up : function(e, node){
 		this.press = false;
 	},
 	
+	/**Lors du mouvement. 
+	 * @param {Event} e 
+	 * @param {HTMLCanvasElement} node
+	 */
 	move : function(e, node){
 		if(this.press){
 			this.x = ( e.x -node.offsetWidth /2 ) /SCALE.x;
 			this.y = ( e.y -node.offsetHeight /2 ) /SCALE.y;
 		}
 	}
-		
-		
 };

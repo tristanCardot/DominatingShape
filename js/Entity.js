@@ -45,7 +45,7 @@ Entity.prototype = {
 					this.time += delta;
 					this.rotation += delta/800;
 					
-					this.scale = 17.5 +Math.sin( this.time/600) /2;
+					this.scale = 17.5 +Math.sin( this.time/150) *.75;
 				break;
 			case Entity.PHASE.DEAD:
 					
