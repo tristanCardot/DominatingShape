@@ -16,6 +16,7 @@
 			width:100%;
 		}
 	</style>
+	
 	<script type="text/javascript" charset="UTF-8" src="js/Color.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/Shape.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/Particle.js"></script>
@@ -23,7 +24,77 @@
 	<script type="text/javascript" charset="UTF-8" src="js/Player.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/Entity.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/EntityManager.js"></script>
+	<script type="text/javascript" charset="UTF-8" src="js/Gui.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/game.js"></script>
+	
+	<script>
+		if ( !window.requestAnimationFrame )
+		window.requestAnimationFrame = ( function() {
+			return window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame ||
+				window.oRequestAnimationFrame ||
+				window.msRequestAnimationFrame ||
+				function ( callback, element ) {
+					window.setTimeout( callback, 1000 / 60 );
+				};
+		} )();
+		
+		var SIZE = 200,
+		SIZESQRT = Math.sqrt( SIZE *SIZE +SIZE *SIZE ) *1.1,
+		PI2 = Math.PI *2,
+		SCALE = {x:0, y:0};
+
+		/** @type {HTMLCanvasElement}*/
+		var CANVAS = document.createElement('canvas');
+			CANVAS.height = SIZE*2;
+			CANVAS.width = SIZE*2;
+	
+		/**@type {CanvasRenderingContext2D}*/
+		var CTX = CANVAS.getContext('2d');
+	
+		window.addEventListener('load', function(){
+			SCALE.x = window.innerWidth /( SIZE *2);
+			SCALE.y = window.innerHeight /( SIZE *2);
+
+			document.body.appendChild(CANVAS);
+
+			buildGui(game);
+			game.start();
+		}, false);
+	
+		window.addEventListener('resize', function(){
+			SCALE.x = window.innerWidth /( SIZE *2);
+			SCALE.y = window.innerHeight /( SIZE *2);
+		}, false);
+	
+		window.addEventListener('focus', function(e){
+			game.start();
+		}, false);
+	
+		window.addEventListener('blur', function(e){
+			if(game.run){
+				CTX.globalAlpha = .5;
+				CTX.fillStyle = '#000';
+				CTX.fillRect(-SIZE, -SIZE, SIZE*2, SIZE*2);
+
+				CTX.fillStyle = '#FFF';
+				CTX.fillRect(-20, -25, 15, 50);
+				CTX.fillRect(5, -25, 15, 50);
+
+				CTX.globalAlpha = 1;
+			}
+			
+			game.stop();
+		}, false);
+	
+		CTX.translate(CANVAS.width/2, CANVAS.height/2);
+		CTX.lineWidth = .20;
+		CTX.font = '40px sans-serif';
+	
+		var player = new Player(),
+			em = new EntityManager(),
+			game = new Game();
+	</script>
 </head>
 <body>
 </body>

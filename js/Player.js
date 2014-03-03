@@ -51,12 +51,14 @@ Player.prototype = {
 		if(this.cursor.press){
 			this.particle.add(this.cursor.x, this.cursor.y);
 			
-			var list = em.getCollide({x: this.cursor.x, y: this.cursor.y}, {x: this.cursor.lastX, y: this.cursor.lastY});
-			
+			var segment = this.cursor.getSegment();
+			var list = em.getCollide(segment.from, segment.to);
+
 			for(var i=0; i<list.length; i++)
 				if(list[i].shape.id === this.shape.id  &&  list[i].color.id === this.color.id){
 					em.remove(list[i]);	
 					this.combo++;
+					this.score += this.combo;
 				}
 		}
 	},
@@ -77,7 +79,7 @@ Player.prototype = {
 		this.particle.draw();
 		this.shape.draw();
 
-		CTX.fillStyle = '#FFF';
+		CTX.fillStyle = this.color.evaluate(1);
 		CTX.fillText(this.score, -200, 197);
 	},
 	

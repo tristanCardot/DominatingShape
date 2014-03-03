@@ -1,49 +1,68 @@
-var SIZE = 200,
-	SIZESQRT = Math.sqrt( SIZE *SIZE +SIZE *SIZE ) *1.1,
-	PI2 = Math.PI *2,
-	SCALE = {x:0, y:0};
+function Game(){
+	this.run = false;
+	this.active = 0;
+	this.lastUpdate = 0;
+	this.guiList = [];
+	this.activeGui = undefined;
+}
 
-/** @type {HTMLCanvasElement}*/
-var CANVAS = document.createElement('canvas');
-	CANVAS.height = SIZE*2;
-	CANVAS.width = SIZE*2;
+Game.prototype = {
+	start : function(){
+		if(this.run)
+			return;
 
-/**@type {CanvasRenderingContext2D}*/
-var CTX = CANVAS.getContext('2d');
-
-window.addEventListener('load', function(){
-	SCALE.x = window.innerWidth /( SIZE *2);
-	SCALE.y = window.innerHeight /( SIZE *2);
+		this.run = true;
+		this.lastUpdate = Date.now();
+		
+		this.update(this);
+	},
+		
+	stop : function(){
+		this.run = false;
+	},
 	
-	document.body.appendChild(CANVAS);
-}, false);
+	update : function(self){
+		if(!this.run)
+			return;
+		
+		if(this.activeGui === undefined)
+			return this.stop();
+			
+		var delta = Date.now() - this.lastUpdate;
+		this.lastUpdate = Date.now();
+		
+		this.activeGui.update(delta);
+		this.activeGui.render();
 
-window.addEventListener('resize', function(){
-	SCALE.x = window.innerWidth /( SIZE *2);
-	SCALE.y = window.innerHeight /( SIZE *2);
-}, false);
-
-CTX.translate(CANVAS.width/2, CANVAS.height/2);
-CTX.lineWidth = .20;
-CTX.font = '40px sans-serif';
-
-
-var player = new Player(),
-	em = new EntityManager();
-
-var count = 0, countP = 0;
-setInterval(function(){
-	if(count<= 0){
-		count = 50;
-		em.spawn();
-	}else
-		count--;
+		requestAnimationFrame( function(){ self.update(self); } );
+	},
 	
-	CTX.clearRect(-SIZESQRT, -SIZESQRT, SIZESQRT*2, SIZESQRT*2);
+	openGui : function(id){
+		if(this.activeGui !== undefined)
+			this.activeGui.removeEvent();
+		
+		this.activeGui = this.guiList[id];
+		console.log(this.activeGui);
+		if(this.activeGui !== undefined)
+			this.activeGui.bindEvent();
+	}
+};
+var count = 5;
 
-	player.update(16);
-	player.drawBackground();
-	
-	em.updateAndDraw(16);
-	player.draw();
-},16);
+/*
+
+if( this.count <= 0 ){
+	this.count = 50;
+	em.spawn();
+}else
+	this.count--;
+
+player.update(delta);
+
+player.drawBackground();
+
+em.updateAndDraw(delta);
+player.draw();
+
+requestAnimationFrame( function(){ self.update(self); } );
+*/
