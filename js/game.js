@@ -25,6 +25,8 @@ window.addEventListener('resize', function(){
 
 CTX.translate(CANVAS.width/2, CANVAS.height/2);
 CTX.lineWidth = .20;
+CTX.font = '40px sans-serif';
+
 
 var player = new Player(),
 	em = new EntityManager();
@@ -36,25 +38,6 @@ setInterval(function(){
 		em.spawn();
 	}else
 		count--;
-
-	if(countP<= 0){
-		countP = 20;
-		
-		var rand = Math.random()*10;
-		
-		/*if(rand < 3.5)
-			player.shape.morphing( Math.floor(Math.random() *SHAPE.length ) );
-		
-		else if(rand < 7)
-			player.color.morphing( COLOR[ Math.floor(Math.random() *COLOR.length) ] );
-		
-		/*else{
-			player.shape.morphing( Math.floor(Math.random() *SHAPE.length ) );
-			player.color.morphing( COLOR[ Math.floor(Math.random() *COLOR.length) ] );
-		}*/
-		
-	}else
-		countP--;
 	
 	CTX.clearRect(-SIZESQRT, -SIZESQRT, SIZESQRT*2, SIZESQRT*2);
 

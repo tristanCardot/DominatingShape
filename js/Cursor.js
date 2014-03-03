@@ -6,6 +6,8 @@ function Cursor(){
 	
 	/** @type {Number}*/this.x = 0;
 	/** @type {Number}*/this.y = 0;
+	/** @type {Number}*/this.lastX = 0;
+	/**@type {Number}*/this.lastY = 0;
 	
 	this.bindEvent(this);
 }
@@ -22,6 +24,10 @@ Cursor.prototype = {
 		CANVAS.addEventListener('mouseup', function(e){
 			self.up(e, this);
 		}, false);
+
+		CANVAS.addEventListener('mouseout', function(e){
+			self.up(e, this);
+		}, false);
 		
 		CANVAS.addEventListener('mousemove', function(e){
 			self.move(e, this);
@@ -34,8 +40,10 @@ Cursor.prototype = {
 	 */
 	down : function(e, node){
 		this.press = true;
-		this.x = ( e.x -node.offsetWidth /2 ) /SCALE.x;
-		this.y = ( e.y -node.offsetHeight /2 ) /SCALE.y;
+		this.lastX = this.x = ( e.x -node.offsetWidth /2 ) /SCALE.x;
+		this.lastY = this.y = ( e.y -node.offsetHeight /2 ) /SCALE.y;
+		
+		this.press = Math.sqrt( this.x *this.x + this.y *this.y ) < 20;
 	},
 	
 	/**Lors du relachement. 
@@ -44,6 +52,7 @@ Cursor.prototype = {
 	 */
 	up : function(e, node){
 		this.press = false;
+		player.updateScore();
 	},
 	
 	/**Lors du mouvement. 
@@ -52,6 +61,9 @@ Cursor.prototype = {
 	 */
 	move : function(e, node){
 		if(this.press){
+			this.lastX = this.x;
+			this.lastY = this.y;
+			
 			this.x = ( e.x -node.offsetWidth /2 ) /SCALE.x;
 			this.y = ( e.y -node.offsetHeight /2 ) /SCALE.y;
 		}

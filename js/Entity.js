@@ -31,10 +31,10 @@ Entity.prototype = {
 		switch(this.phase){
 			case Entity.PHASE.SPAWN:
 				this.time += delta;
-				this.scale = this.time/57;
-				this.rotation += delta/200;
+				this.scale = this.time/42.86;
+				this.rotation += delta/150;
 				
-				if(this.time>1000){
+				if(this.time>750){
 					this.time = 0;
 					this.phase = Entity.PHASE.ALIVE;
 				}

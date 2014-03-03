@@ -8,9 +8,9 @@ function EntityManager(){
 EntityManager.prototype = {
 	spawn : function(){
 		this.list.push( new Entity(
-			SIZE,
+			SIZE-17.5,
 			Math.floor(Math.random()*6)*Math.PI/3,
-			1/26,
+			1/80,
 			SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
 			COLOR[ Math.floor( Math.random() *COLOR.length) ]
 		));
@@ -47,7 +47,7 @@ EntityManager.prototype = {
 	},
 
 	getTarget : function(){
-		var select = ~~(Math.random() *3) -this.lastOffset;
+		var select = ~~(Math.random() *4) -this.lastOffset;
 		
 		if( select >= this.list.length )
 			select = this.list.length -1;
@@ -55,26 +55,68 @@ EntityManager.prototype = {
 		else if(select < 0)
 			select = 0;
 		
-		this.lastOffset = select -2;
+		this.lastOffset = select;
 		
 		return this.list[select];
 	},
 	
-	getCollide : function(x, y){
+	getCollide : function(p1, p2){
 		var result = [];
 		
-		for(var s,i=0, rx, ry; i<this.list.length; i++){
+		for(var s,i=0, c={x:0,y:0}, rx, ry, p12={x:0,y:0},p1c={x:0,y:0},p2c={x:0,y:0}; i<this.list.length; i++){
 			s = this.list[i];
 			
-			rx = x -( Math.cos(s.angle) *s.range );
-			ry = y -( Math.sin(s.angle) *s.range );
-			if( Math.sqrt( rx *rx +ry *ry ) < 18)
+			c.x = Math.cos(s.angle) *s.range;
+			c.y = Math.sin(s.angle) *s.range;
+			
+			rx = p1.x -c.x;
+			ry = p1.y -c.y;
+			
+			if( Math.sqrt( rx *rx +ry *ry ) < s.scale){
 				result.push(s);
+				continue;
+			}
+			
+			rx = p2.x -c.x;
+			ry = p2.y -c.y;
+
+			if( Math.sqrt( rx *rx +ry *ry ) < s.scale){
+				result.push(s);
+				continue;
+			}
+			
+			if( !this.lineCollide(p1, p2, c, s) )
+				continue;
+			
+			p12.x = p2.x -p1.x;
+			p12.y = p2.y -p1.y;
+			p1c.x = c.x -p1.x;
+			p1c.y = c.y -p1.y;
+			p2c.x = c.x -p2.x;
+			p2c.y = c.y -p2.y;
+			
+			if( p12.x *p1c.x +p12.y *p1c.y >= 0  &&
+			    (-p12.x) *p2c.x +(-p12.y) *p2c.y >= 0 ){
+				result.push(s);
+			}
 		}
 
 		return result;
 	},
 	
+	lineCollide : function(p1, p2, c1, s){
+		var u = {x: p2.x -p1.x, 
+		         y: p2.y -p1.y },
+		  p1c ={ x: c1.x -p1.x,
+	             y: c1.y -p1.y };
+	   
+	   var num = u.x *p1c.y -u.y *p1c.x;
+	   if (num <0)
+		   num = -num;
+	   
+	   return num /Math.sqrt( u.x *u.x +u.y *u.y)  <  s.scale;
+	},
+
 	remove : function(entity){
 		var particle = new Particle( entity.shape, entity.color, 800 ),
 			x = Math.cos( entity.angle ) *entity.range,

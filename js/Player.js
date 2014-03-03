@@ -7,6 +7,8 @@ function Player(){
 	/**@type {Particle} */this.particle = new Particle(this.shape, this.color, 400);
 	
 	/**@type {Cursor} */this.cursor = new Cursor();
+	/**@type {Number} */this.score = 0;
+	/**@type {number} */this.combo = 0;
 }
 
 Player.prototype = {
@@ -17,16 +19,16 @@ Player.prototype = {
 		CTX.rotate(this.shape.rotation);
 		
 		for(var i=0, rad, toRad; i<length; i++){
-			rad = this.shape.rads[i]-0.005;
+			rad = this.shape.rads[i] -0.005;
 			toRad = this.shape.rads[i+1];
 			
 			CTX.fillStyle = this.color.evaluate( this.shape.values[i] );
 			
 			CTX.beginPath();
 			CTX.moveTo( 0, 0 );
-			CTX.lineTo( Math.cos(rad) *SIZESQRT, Math.sin(rad) *SIZESQRT );
-			CTX.lineTo( Math.cos( ( rad +toRad ) /2) *SIZE *2, Math.sin( ( rad +toRad ) /2 ) *SIZE *2 );
-			CTX.lineTo( Math.cos(toRad) *SIZESQRT, Math.sin(toRad) *SIZESQRT );
+			CTX.lineTo( Math.sin(rad) *SIZESQRT, -Math.cos(rad) *SIZESQRT );
+			CTX.lineTo( Math.sin( ( rad +toRad ) /2) *SIZE *2, -Math.cos( ( rad +toRad ) /2 ) *SIZE *2 );
+			CTX.lineTo( Math.sin(toRad) *SIZESQRT, -Math.cos(toRad) *SIZESQRT );
 			CTX.closePath();
 			CTX.fill();
 		}
@@ -49,22 +51,14 @@ Player.prototype = {
 		if(this.cursor.press){
 			this.particle.add(this.cursor.x, this.cursor.y);
 			
-			var list = em.getCollide(this.cursor.x, this.cursor.y);
+			var list = em.getCollide({x: this.cursor.x, y: this.cursor.y}, {x: this.cursor.lastX, y: this.cursor.lastY});
 			
-			for(var i=0; i<list.length; i++){
+			for(var i=0; i<list.length; i++)
 				if(list[i].shape.id === this.shape.id  &&  list[i].color.id === this.color.id){
-					em.remove(list[i]);
-					
-					var target = em.getTarget();
-					
-					if(target)
-						this.morphing(target);
-						
-					break;
+					em.remove(list[i]);	
+					this.combo++;
 				}
-			}
 		}
-		
 	},
 	
 	/**Transforme le joueur dans la couleur et forme de la prochaine cible.
@@ -80,8 +74,21 @@ Player.prototype = {
 		CTX.fillStyle = this.color.evaluate(.4);
 		CTX.strokeStyle = this.color.evaluate(1);
 
-		this.shape.draw();
 		this.particle.draw();
+		this.shape.draw();
+
+		CTX.fillStyle = '#FFF';
+		CTX.fillText(this.score, -200, 197);
+	},
+	
+	updateScore : function(){
+		if( this.combo === 0 )
+			return;
+		
+		this.score += this.combo *this.combo;
+		this.combo = 0;
+		
+		this.morphing( em.getTarget() );
 	}
 };
 
@@ -92,7 +99,7 @@ Player.prototype = {
 function ColorP(id){
 	var color = COLOR[id];
 	
-	this.id = color.id
+	this.id = color.id;
 	this.r = color.r;
 	this.g = color.g;
 	this.b = color.b;
@@ -182,10 +189,10 @@ ShapeP.prototype = {
 		
 		CTX.beginPath();
 		
-		CTX.moveTo( Math.cos(this.rads[0]), Math.sin(this.rads[0]));
+		CTX.moveTo( Math.sin(this.rads[0]), -Math.cos(this.rads[0]));
 
 		for(var i=1; i<this.rads.length; i++)
-			CTX.lineTo( Math.cos(this.rads[i]), Math.sin(this.rads[i]));
+			CTX.lineTo( Math.sin(this.rads[i]), -Math.cos(this.rads[i]));
 
 		CTX.closePath();
 
@@ -201,10 +208,10 @@ ShapeP.prototype = {
 	fill : function(ctx){
 		ctx.beginPath();
 		
-		ctx.moveTo( Math.cos(this.rads[0])*4, Math.sin(this.rads[0])*4);
+		ctx.moveTo( Math.sin(this.rads[0])*4, -Math.cos(this.rads[0])*4);
 
 		for(var i=1; i<this.rads.length; i++)
-			ctx.lineTo( Math.cos(this.rads[i])*4, Math.sin(this.rads[i])*4);
+			ctx.lineTo( Math.sin(this.rads[i])*4, -Math.cos(this.rads[i])*4);
 
 		ctx.closePath();
 

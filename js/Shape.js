@@ -7,8 +7,8 @@ function Shape( id, sides ){
 	
 	for(var i=0; i<sides; i++)
 		this.vertex.push(
-			Math.cos( Math.PI *2 /sides *i ),
-			Math.sin( Math.PI *2 /sides *i )
+			Math.sin( Math.PI *2 /sides *i ),
+			-Math.cos( Math.PI *2 /sides *i )
 		);
 }
 
