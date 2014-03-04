@@ -30,14 +30,14 @@ Entity.prototype = {
 	update : function(delta){
 		switch(this.phase){
 			case Entity.PHASE.SPAWN:
-				this.time += delta;
-				this.scale = this.time /42.86 +0.01;
-				this.rotation += delta /150;
-				
-				if(this.time>750){
-					this.time = 0;
-					this.phase = Entity.PHASE.ALIVE;
-				}
+					this.time += delta;
+					this.scale = this.time /42.86 +0.01;
+					this.rotation += delta /150;
+					
+					if(this.time>750){
+						this.time = 0;
+						this.phase = Entity.PHASE.ALIVE;
+					}
 				break;
 				
 			case Entity.PHASE.ALIVE:

@@ -3,6 +3,7 @@ function EntityManager(){
 	this.particles = [];
 	this.currentLevel = 0;
 	this.lastOffset = 0;
+	this.audioChan = null;
 }
 
 EntityManager.prototype = {
@@ -18,7 +19,7 @@ EntityManager.prototype = {
 			));
 		player.morphing(this.list[0]);
 	},
-		
+	
 	spawn : function(){
 		this.list.push( new Entity(
 			SIZE-17.5,
@@ -48,16 +49,19 @@ EntityManager.prototype = {
 
 		for(i=0; i<this.list.length; i++)
 			if(this.list[i].update(delta)){
-				this.list.splice( i, 1 );
-				i--;
+				while(this.list.length !== 0)
+					this.remove(this.list[i]);
+				
+				game.openGui(1);
+				return;
 			}
 	},
 
 	draw : function(){
-		for(i=0; i<this.particles.length; i++)
+		for(var i=0; i<this.particles.length; i++)
 			this.particles[i].draw();
 		
-		for(i=0; i<this.list.length; i++)
+		for(var i=0; i<this.list.length; i++)
 			this.list[i].draw();
 	},
 	
@@ -120,11 +124,11 @@ EntityManager.prototype = {
 	},
 	
 	lineCollide : function(p1, p2, c1, s){
-		var u = {x: p2.x -p1.x, 
+		var u = {x: p2.x -p1.x,
 		         y: p2.y -p1.y },
 		  p1c ={ x: c1.x -p1.x,
 	             y: c1.y -p1.y };
-	   
+
 	   var num = u.x *p1c.y -u.y *p1c.x;
 	   if (num <0)
 		   num = -num;
@@ -141,7 +145,15 @@ EntityManager.prototype = {
 			particle.add( x, y , 0.008*i+0.14 );
 		
 		this.particles.push( particle );
+
+		this.audioChan.currentTime = 0;
+		this.audioChan.play();
 		
 		this.list.splice( this.list.indexOf(entity), 1);
+	},
+	
+	setAudioChan : function(audio){
+		this.audioChan = audio;
+		this.audioChan.volume = .8;
 	}
 };
