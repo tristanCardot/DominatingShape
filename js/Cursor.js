@@ -12,7 +12,12 @@ function Cursor(){
 	var self = this;
 	this.eventDown = function(e){ self.down(e, this); };
 	this.eventUp = function(e){ self.up(e, this); };
-	this.eventMove = function(e){console.log(e); self.move(e, this); };
+	this.eventMove = function(e){ self.move(e, this); };
+
+	this.eventTouchDown = function(e){ self.touchDown(e, this); };
+	this.eventTouchUp = function(e){ self.touchUp(e, this); };
+	this.eventTouchMove = function(e){ self.touchMove(e, this); };
+	this.touchId = null;
 }
 
 Cursor.prototype = {
@@ -21,13 +26,9 @@ Cursor.prototype = {
 	 * @param {HTMLCanvasElement} node
 	 */
 	down : function(e, node){
-		this.press = true;
-		this.lastX = this.x = ( e.x -node.innerWidth /2 ) /SCALE.x;
-		this.lastY = this.y = ( e.y -node.innerHeight /2 ) /SCALE.y;
-		
-		console.log(node);
-		
-		
+		this.lastX = this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
+		this.lastY = this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
+
 		this.press = Math.sqrt( this.x *this.x + this.y *this.y ) < 20;
 	},
 	
@@ -46,11 +47,31 @@ Cursor.prototype = {
 	 */
 	move : function(e, node){
 		if(this.press){
-			this.x = ( e.x -node.innerWidth /2 ) /SCALE.x;
-			this.y = ( e.y -node.innerHeight /2 ) /SCALE.y;
+			this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
+			this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
 		}
 	},
 	
+	touchDown : function(e, node){
+		if(this.press)
+			return;
+
+		var select = e.touches[ e.touches.length -1 ];
+		this.touchId = select.identifier;
+		
+		this.down( select , node);
+	},
+	
+	touchMove : function(e, node){
+		var select = e.identifiedTouch( this.touchId );
+		this.move(select,  node);
+	},
+	
+	touchUp : function(e, node){
+		var select = e.identifiedTouch( this.touchId );
+		this.up(select,  node);
+	},
+
 	getSegment : function(){
 		var result = {
 			from : {x: this.lastX , y: this.lastY},

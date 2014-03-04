@@ -1,9 +1,12 @@
 /**@constructor */
 function Game(){
 	this.run = false;
+	
 	this.active = 0;
 	this.lastUpdate = 0;
+	
 	this.guiList = [];
+	
 	this.activeGui = undefined;
 }
 
@@ -16,12 +19,15 @@ Game.prototype = {
 		this.run = true;
 		this.lastUpdate = Date.now();
 		
+		this.audioChan.play();
+		
 		this.update(this);
 	},
 		
 	/**Mais en pause. */
 	stop : function(){
 		this.run = false;
+		this.audioChan.pause();
 	},
 	
 	/**Mais à jour la gui courante. 
@@ -56,6 +62,12 @@ Game.prototype = {
 			this.activeGui.init();
 			this.activeGui.bindEvent();
 		}
+	},
+	
+	setAudioChan : function(audio){console.log(audio);
+		this.audioChan = audio;
+		this.audioChan.loop = true;
+		this.audioChan.volume = .8;
 	}
 };
 

@@ -67,11 +67,14 @@ Player.prototype = {
 	 * @param {Entity} target
 	 */
 	morphing : function(target){
+		if(!target)
+			return;
+		
 		this.shape.morphing(target.shape);
 		this.color.morphing(target.color);
 	},
 	
-	/** Dessine la forme centrale représentent le joueur. */
+	/**Dessine la forme centrale représentent le joueur. */
 	draw : function(){
 		CTX.fillStyle = this.color.evaluate(.4);
 		CTX.strokeStyle = this.color.evaluate(1);
@@ -81,6 +84,16 @@ Player.prototype = {
 
 		CTX.fillStyle = this.color.evaluate(1);
 		CTX.fillText(this.score, -200, 197);
+	},
+	
+	/**Dessine la barre de progression. */
+	drawFromProgress : function(progress){
+		CTX.fillStyle = this.color.evaluate(progress);
+		CTX.strokeStyle = this.color.evaluate(1);
+
+		this.shape.draw();
+		
+		
 	},
 	
 	updateScore : function(){
