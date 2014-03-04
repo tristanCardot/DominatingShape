@@ -29,8 +29,8 @@ Gui.prototype = {
  * @param {Game} game
  */
 function buildGui(game){
-	am.load('biup', 'audio/biup.mp3', 'audio/mp3');
-	am.load('inspiration', 'audio/inspiration.mp3', 'audio/mp3');
+	am.load('biup', window.location.href +'audio/biup.mp3', 'audio/mp3');
+	am.load('inspiration',  window.location.href +'audio/Inspiration.mp3', 'audio/mp3');
 	em.setAudioChan( am.get('biup'));
 	game.setAudioChan( am.get('inspiration'));
 	
