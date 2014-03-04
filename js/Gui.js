@@ -29,8 +29,8 @@ Gui.prototype = {
  * @param {Game} game
  */
 function buildGui(game){
-	am.load('biup', '/audio/biup.mp3', 'audio/mp3');
-	am.load('inspiration', '/audio/inspiration.mp3', 'audio/mp3');
+	am.load('biup', 'audio/biup.mp3', 'audio/mp3');
+	am.load('inspiration', 'audio/inspiration.mp3', 'audio/mp3');
 	em.setAudioChan( am.get('biup'));
 	game.setAudioChan( am.get('inspiration'));
 	
@@ -51,10 +51,10 @@ function buildGui(game){
 		
 		function(delta){
 			player.update(delta);
-			this.progress += delta /1000;
+			this.progress += delta /10000;
 
 			if(this.progress > 1)
-				game.openGui(2);
+				game.openGui(1);
 		},
 		
 		function(){
