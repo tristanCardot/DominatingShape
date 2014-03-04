@@ -24,7 +24,7 @@ Color.prototype = {
 		);
 	},
 
-	/**Permet de convertir la couleur au format 0xRRGGBB
+	/**Permet de convertir la couleur au format #RRGGBB
 	 * @return {String}
 	 */
 	toString : function(){
@@ -39,6 +39,11 @@ Color.prototype = {
 	}
 };
 
+/**Permet de récupérer la convertion #RRGGBB
+ * @param {Number} r
+ * @param {Number} g
+ * @param {Number} b
+ */
 Color.toString = function( r, g, b ){
 	return '#'+ ( 16777216 + (r<<16) + (g<<8) + (b<<0) ).toString(16).slice(1); 
 };

@@ -1,3 +1,4 @@
+/**@constructor */
 function Game(){
 	this.run = false;
 	this.active = 0;
@@ -7,6 +8,7 @@ function Game(){
 }
 
 Game.prototype = {
+	/**Mais en route. */
 	start : function(){
 		if(this.run)
 			return;
@@ -17,10 +19,14 @@ Game.prototype = {
 		this.update(this);
 	},
 		
+	/**Mais en pause. */
 	stop : function(){
 		this.run = false;
 	},
 	
+	/**Mais à jour la gui courante. 
+	 * @param {Game} self 
+	 */
 	update : function(self){
 		if(!this.run)
 			return;
@@ -37,32 +43,20 @@ Game.prototype = {
 		requestAnimationFrame( function(){ self.update(self); } );
 	},
 	
+	/**Ouvre le gui [id].
+	 * @param {Number} id
+	 */
 	openGui : function(id){
 		if(this.activeGui !== undefined)
 			this.activeGui.removeEvent();
 		
 		this.activeGui = this.guiList[id];
-		console.log(this.activeGui);
-		if(this.activeGui !== undefined)
+		
+		if(this.activeGui !== undefined){
+			this.activeGui.init();
 			this.activeGui.bindEvent();
+		}
 	}
 };
+
 var count = 5;
-
-/*
-
-if( this.count <= 0 ){
-	this.count = 50;
-	em.spawn();
-}else
-	this.count--;
-
-player.update(delta);
-
-player.drawBackground();
-
-em.updateAndDraw(delta);
-player.draw();
-
-requestAnimationFrame( function(){ self.update(self); } );
-*/

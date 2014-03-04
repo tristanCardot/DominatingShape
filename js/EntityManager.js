@@ -6,6 +6,19 @@ function EntityManager(){
 }
 
 EntityManager.prototype = {
+	reset : function(){
+		this.list = [];
+		
+		this.list.push( new Entity(
+				SIZE-40,
+				0,
+				0,
+				SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
+				COLOR[ Math.floor( Math.random() *COLOR.length) ]
+			));
+		player.morphing(this.list[0]);
+	},
+		
 	spawn : function(){
 		this.list.push( new Entity(
 			SIZE-17.5,
