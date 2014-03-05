@@ -29,10 +29,10 @@ Cursor.prototype = {
 		this.lastX = this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
 		this.lastY = this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
 
-		this.press = Math.sqrt( this.x *this.x + this.y *this.y ) < 20;
+		this.press = Math.sqrt( this.x *this.x + this.y *this.y ) < 35;
 	},
 	
-	/**Lors du relachement. 
+	/**Lors du relachement.
 	 * @param {Event} e 
 	 * @param {HTMLCanvasElement} node
 	 */
@@ -41,11 +41,13 @@ Cursor.prototype = {
 		player.updateScore();
 	},
 	
-	/**Lors du mouvement. 
+	/**Lors du mouvement.
 	 * @param {Event} e 
 	 * @param {HTMLCanvasElement} node
 	 */
 	move : function(e, node){
+		am.execEvents();
+		
 		if(this.press){
 			this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
 			this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
@@ -53,9 +55,11 @@ Cursor.prototype = {
 	},
 	
 	touchDown : function(e, node){
+		e.preventDefault();
+		
 		if(this.press)
 			return;
-
+		
 		var select = e.touches[ e.touches.length -1 ];
 		this.touchId = select.identifier;
 		
@@ -63,12 +67,19 @@ Cursor.prototype = {
 	},
 	
 	touchMove : function(e, node){
-		var select = e.identifiedTouch( this.touchId );
+		e.preventDefault();
+		
+		var select = e.touches.item(0);
+		
 		this.move(select,  node);
 	},
 	
 	touchUp : function(e, node){
-		var select = e.identifiedTouch( this.touchId );
+		e.preventDefault();
+		var select = e.touches.item(0);
+		
+		document.getElementById('log').innerHTML = select;
+		
 		this.up(select,  node);
 	},
 

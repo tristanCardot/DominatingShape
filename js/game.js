@@ -18,7 +18,7 @@ Game.prototype = {
 
 		this.run = true;
 		this.lastUpdate = Date.now();
-		
+
 		this.audioChan.play();
 		
 		this.update(this);
@@ -26,17 +26,33 @@ Game.prototype = {
 		
 	/**Mais en pause. */
 	stop : function(){
+		if(game.run){
+			CTX.globalAlpha = .5;
+			CTX.fillStyle = '#000';
+			CTX.fillRect(-SIZE, -SIZE, SIZE*2, SIZE*2);
+
+			CTX.fillStyle = '#FFF';
+			CTX.fillRect(-20, -25, 15, 50);
+			CTX.fillRect(5, -25, 15, 50);
+
+			CTX.globalAlpha = 1;
+		}
+		
+		
 		this.run = false;
+		
+		//am.pushEvent(this.audioChan, 'pause');
 		this.audioChan.pause();
+		//am.execEvents();
 	},
 	
-	/**Mais à jour la gui courante. 
-	 * @param {Game} self 
+	/**Mais à jour la gui courante.
+	 * @param {Game} self
 	 */
 	update : function(self){
 		if(!this.run)
 			return;
-		
+
 		if(this.activeGui === undefined)
 			return this.stop();
 			
@@ -64,10 +80,10 @@ Game.prototype = {
 		}
 	},
 	
-	setAudioChan : function(audio){console.log(audio);
+	setAudioChan : function(audio){
 		this.audioChan = audio;
 		this.audioChan.loop = true;
-		this.audioChan.volume = .8;
+		this.audioChan.volume = .5;
 	}
 };
 

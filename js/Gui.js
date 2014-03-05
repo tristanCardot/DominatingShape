@@ -29,40 +29,23 @@ Gui.prototype = {
  * @param {Game} game
  */
 function buildGui(game){
-	am.load('biup', window.location.href +'audio/biup.mp3', 'audio/mp3');
-	am.load('inspiration',  window.location.href +'audio/Inspiration.mp3', 'audio/mp3');
+	var div = document.createElement('div');
+	div.style.color = 'white';
+	div.style.position = 'fixed';
+	div.style.top = '0px';
+	div.innerHTML = 'def';
+	div.id = 'log';
+	
+	document.body.appendChild(div);
+	
+	am.load('biup', window.location.href +'audio/biup');
+	am.load('inspiration',  window.location.href +'audio/Inspiration');
 	em.setAudioChan( am.get('biup'));
 	game.setAudioChan( am.get('inspiration'));
-	
-	game.guiList.push(new Gui({
-		},
-		
-		function(){
-			player.morphing(new Entity(
-				0,
-				0,
-				0,
-				SHAPE[ SHAPE.TRIANGLE ],
-				COLOR[ Math.floor( Math.random() *COLOR.length) ]
-			));
-			
-			this.progress = 0;
-		},
-		
-		function(delta){
-			player.update(delta);
-			this.progress += delta /10000;
 
-			if(this.progress > 1)
-				game.openGui(1);
-		},
-		
-		function(){
-			player.drawBackground();
-			player.drawFromProgress(this.progress);
-		}
-	));
+	am.pushEvent(game.audioChan, 'play');
 	
+
 	game.guiList.push(new Gui({
 			'mousedown': player.cursor.eventDown,
 			'mouseup': player.cursor.eventUp,
@@ -70,24 +53,24 @@ function buildGui(game){
 			'mousemove': player.cursor.eventMove,
 	
 			'touchstart' : player.cursor.eventTouchDown,
-			'touchsend' : player.cursor.eventTouchUp,
+			'touchend' : player.cursor.eventTouchUp,
 			'touchcancel' : player.cursor.eventTouchUp,
 			'touchmove' : player.cursor.eventTouchMove
 		},
-	
+
 		function(){
 			em.reset();
 		},
-		
+
 		function(delta){
 			player.update(delta);
 			em.update(delta);
 			
 			if(em.list.length === 0){
-				game.openGui(2);
+				game.openGui(1);
 			}
 		},
-		
+
 		function(){
 			player.drawBackground();
 			em.draw();
@@ -95,7 +78,7 @@ function buildGui(game){
 			drawArrow();
 		}
 	));
-	
+
 	game.guiList.push(new Gui({
 			'mousedown': player.cursor.eventDown,
 			'mouseup': player.cursor.eventUp,
@@ -103,7 +86,7 @@ function buildGui(game){
 			'mousemove': player.cursor.eventMove,
 
 			'touchstart' : player.cursor.eventTouchDown,
-			'touchsend' : player.cursor.eventTouchUp,
+			'touchend' : player.cursor.eventTouchUp,
 			'touchcancel' : player.cursor.eventTouchUp,
 			'touchmove' : player.cursor.eventTouchMove
 		},
@@ -114,14 +97,14 @@ function buildGui(game){
 		
 		function(delta){
 			if( count <= 0 ){
-				count = 50;
+				count = 100;
 				em.spawn();
+
 			}else
 				count--;
 			
 			player.update(delta);
 			em.update(delta);
-			
 		},
 		
 		function(){
@@ -149,8 +132,6 @@ function drawArrow(){
 	
 	CTX.fill();
 }
-
-
 
 
 
