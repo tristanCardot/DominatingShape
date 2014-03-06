@@ -17,8 +17,8 @@ Game.prototype = {
 			return;
 
 		this.run = true;
-		this.lastUpdate = Date.now();
-
+		this.lastUpdate = Date.now();	
+		
 		this.audioChan.play();
 		
 		this.update(this);
@@ -41,9 +41,7 @@ Game.prototype = {
 		
 		this.run = false;
 		
-		//am.pushEvent(this.audioChan, 'pause');
 		this.audioChan.pause();
-		//am.execEvents();
 	},
 	
 	/**Mais à jour la gui courante.

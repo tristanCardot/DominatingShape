@@ -46,7 +46,6 @@ Cursor.prototype = {
 	 * @param {HTMLCanvasElement} node
 	 */
 	move : function(e, node){
-		am.execEvents();
 		
 		if(this.press){
 			this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;

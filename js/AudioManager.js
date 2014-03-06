@@ -1,6 +1,5 @@
 function AudioManager(){
 	this.buffer = {};
-	this.events = [];
 }
 
 AudioManager.prototype = {
@@ -17,20 +16,11 @@ AudioManager.prototype = {
 	
 	get : function(name){
 		return this.buffer[name];
-	},
-	
-	pushEvent : function(node, action){
-		this.events.push([node,action]);
-	},
-	
-	execEvents : function(){
-		while(this.events.length !== 0){
-			s = this.events.splice(0,1)[0];
-			s[0][ s[1] ]();
-		}
 	}
 };
 
 HTMLAudioElement.prototype.replay = function(){
+	this.pause();
+	this.currentTime = 0.0;	
 	this.play();
 };

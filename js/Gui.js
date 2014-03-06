@@ -42,23 +42,36 @@ function buildGui(game){
 	am.load('inspiration',  window.location.href +'audio/Inspiration');
 	em.setAudioChan( am.get('biup'));
 	game.setAudioChan( am.get('inspiration'));
-
-	am.pushEvent(game.audioChan, 'play');
 	
 
 	game.guiList.push(new Gui({
-			'mousedown': player.cursor.eventDown,
+			'mousedown': function(e){
+				if(!game.activeGui.played){
+					game.activeGui.played = true;
+					em.audioChan.play();
+					setTimeout(function(){game.audioChan.play();}, 1000);
+				}
+				player.cursor.down(e,this);
+			},
 			'mouseup': player.cursor.eventUp,
 			'mouseout': player.cursor.eventUp,
 			'mousemove': player.cursor.eventMove,
 	
-			'touchstart' : player.cursor.eventTouchDown,
+			'touchstart' : function(e){
+				if(!game.activeGui.played){
+					game.activeGui.played = true;
+					em.audioChan.play();
+					setTimeout(function(){game.audioChan.play();}, 1000);
+				}
+				player.cursor.touchDown(e,this);
+			},
 			'touchend' : player.cursor.eventTouchUp,
 			'touchcancel' : player.cursor.eventTouchUp,
 			'touchmove' : player.cursor.eventTouchMove
 		},
 
 		function(){
+			this.played = false;
 			em.reset();
 		},
 
@@ -93,6 +106,7 @@ function buildGui(game){
 
 		function(){
 			player.score = 0;
+			game.audioChan.play();
 		},
 		
 		function(delta){

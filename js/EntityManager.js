@@ -55,7 +55,8 @@ EntityManager.prototype = {
 			if(this.list[i].update(delta)){
 				while(this.list.length !== 0)
 					this.remove(this.list[i]);
-				
+				game.audioChan.pause();
+				game.audioChan.currentTime = 0.0;
 				game.openGui(0);
 				return;
 			}
@@ -149,8 +150,8 @@ EntityManager.prototype = {
 			particle.add( x, y , 0.008*i+0.14 );
 		
 		this.particles.push( particle );
-
-		am.pushEvent(this.audioChan, 'replay');
+		
+		em.audioChan.replay();
 		
 		this.list.splice( this.list.indexOf(entity), 1);
 	},
