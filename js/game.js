@@ -7,10 +7,17 @@ function Game(){
 	
 	this.guiList = [];
 	
-	this.activeGui = undefined;
+	this.activeGui = Gui.NONE;
 }
 
 Game.prototype = {
+	onload : function(){
+		this.guiList = buildGui(this);
+		console.log(this.guiList);
+		this.openGui(GUI.LOADER);
+		this.start();
+	},
+
 	/**Mais en route. */
 	start : function(){
 		if(this.run)
@@ -18,8 +25,6 @@ Game.prototype = {
 
 		this.run = true;
 		this.lastUpdate = Date.now();	
-		
-		this.audioChan.play();
 		
 		this.update(this);
 	},
@@ -38,10 +43,7 @@ Game.prototype = {
 			CTX.globalAlpha = 1;
 		}
 		
-		
 		this.run = false;
-		
-		this.audioChan.pause();
 	},
 	
 	/**Mais à jour la gui courante.
@@ -68,20 +70,21 @@ Game.prototype = {
 	 */
 	openGui : function(id){
 		if(this.activeGui !== undefined)
-			this.activeGui.removeEvent();
+			this.activeGui.close(id);
 		
 		this.activeGui = this.guiList[id];
 		
-		if(this.activeGui !== undefined){
-			this.activeGui.init();
-			this.activeGui.bindEvent();
-		}
+		if(this.activeGui !== undefined)
+			this.activeGui.open();
+		else
+			console.log('gui undefined :'+id);
 	},
 	
 	setAudioChan : function(audio){
+		audio.loop = true;
+		audio.volume = .5;
+		
 		this.audioChan = audio;
-		this.audioChan.loop = true;
-		this.audioChan.volume = .5;
 	}
 };
 

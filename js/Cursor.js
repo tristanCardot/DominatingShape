@@ -77,8 +77,6 @@ Cursor.prototype = {
 		e.preventDefault();
 		var select = e.touches.item(0);
 		
-		document.getElementById('log').innerHTML = select;
-		
 		this.up(select,  node);
 	},
 

@@ -17,14 +17,19 @@
 		}
 	</style>
 	
-	<script type="text/javascript" charset="UTF-8" src="js/Color.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/AudioManager.js"></script>
+	
+	<script type="text/javascript" charset="UTF-8" src="js/Color.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/Shape.js"></script>
+	
 	<script type="text/javascript" charset="UTF-8" src="js/Particle.js"></script>
+	
 	<script type="text/javascript" charset="UTF-8" src="js/Cursor.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/Player.js"></script>
+	
 	<script type="text/javascript" charset="UTF-8" src="js/Entity.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/EntityManager.js"></script>
+	
 	<script type="text/javascript" charset="UTF-8" src="js/Gui.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/game.js"></script>
 	
@@ -58,9 +63,8 @@
 			SCALE.y = window.innerHeight /( SIZE *2);
 
 			document.body.appendChild(CANVAS);
-
-			buildGui(game);
-			game.start();
+			
+			game.onload();
 		}, false);
 	
 		window.addEventListener('resize', function(){
@@ -91,7 +95,6 @@
 	
 		var player = new Player(),
 			em = new EntityManager(),
-			am = new AudioManager(),
 			game = new Game();
 	</script>
 </head>

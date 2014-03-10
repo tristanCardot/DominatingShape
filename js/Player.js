@@ -22,7 +22,7 @@ Player.prototype = {
 			rad = this.shape.rads[i] -0.005;
 			toRad = this.shape.rads[i+1];
 			
-			CTX.fillStyle = this.color.evaluate( this.shape.values[i] );
+			CTX.fillStyle = this.color.evaluate( this.shape.values[i]);
 			
 			CTX.beginPath();
 			CTX.moveTo( 0, 0 );
