@@ -100,10 +100,18 @@ var AM =(function(){
 			PLAY : 2,
 
 			play : function( delay){
+				var self = this;
 				var source = this.ctx.createBufferSource();
 				source.loop = this.loop;
 				source.buffer = this.buffer;
 				source.connect(this.filter);
+				
+				source.onended = function(){
+					if(!this.loop){
+						self.state = self.STOP;
+						this.disconnect( 0);
+					}
+				};
 
 				if( this.state === this.PAUSE){
 					this.timer.offset += this.ctx.currentTime -this.timer.paused;
@@ -180,6 +188,10 @@ var AM =(function(){
 	}else{
 		AudioManager.prototype.onloadChannel = function( request, e, event, am, name){
 			var node = document.createElement( 'audio');
+			node.addEventListener( 'ended', function(){
+	        	this.state = this.STOP;
+			}, false);
+			
 			var reader = new FileReader();
 
             reader.onload = function( readEvent){
@@ -194,12 +206,15 @@ var AM =(function(){
             reader.readAsDataURL( request.response);
 		};
 
-
+		HTMLAudioElement.prototype.STOP = 0;
+		HTMLAudioElement.prototype.PAUSE = 1;
+		HTMLAudioElement.prototype.PLAY = 2;
+		
 		HTMLAudioElement.prototype._play = HTMLAudioElement.prototype.play;
 		HTMLAudioElement.prototype._pause = HTMLAudioElement.prototype.pause;
 
         HTMLAudioElement.prototype.play = function(){
-        	if(this.dataset.play === "true"){
+        	if(this.state === this.PLAY){
         		this.pause();
 				this.currentTime = 0.0;
 				this._play();
@@ -211,11 +226,13 @@ var AM =(function(){
 
         HTMLAudioElement.prototype.pause = function(){
         	this.dataset.play = "false";
+        	this.state = this.PAUSE;
         	this._pause();
         };
 
 		HTMLAudioElement.prototype.stop = function(){
 			this.pause();
+        	this.state = this.STOP;
 			this.currentTime = 0.0;
 		};
 	}

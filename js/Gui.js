@@ -19,107 +19,13 @@ window.GUI = {
 	OPTIONS : 3
 };
 
-function buildGui( game){
-	var div = document.createElement( 'div');
-	div.style.color = 'white';
-	div.style.position = 'fixed';
-	div.style.top = '0px';
-	div.innerHTML = 'def';
-	div.id = 'log';
-
-	
+function buildGui( game){	
 	return [ 
 		buildGuiLoader( game),
 		buildGuiMenu( game),
 		buildGuiPlay( game),
 		buildGuiOptions( game)
 	];
-	
-	/*game.guiList.push(new Gui({
-			'mousedown': function(e){
-				if(!game.activeGui.played){
-					game.activeGui.played = true;
-					em.audioChan.play();
-					setTimeout(function(){game.audioChan.play();}, 1000);
-				}
-				player.cursor.down(e,this);
-			},
-			'mouseup': player.cursor.eventUp,
-			'mouseout': player.cursor.eventUp,
-			'mousemove': player.cursor.eventMove,
-	
-			'touchstart' : function(e){
-				if(!game.activeGui.played){
-					game.activeGui.played = true;
-					em.audioChan.play();
-					setTimeout(function(){game.audioChan.play();}, 1000);
-				}
-				player.cursor.touchDown(e,this);
-			},
-			'touchend' : player.cursor.eventTouchUp,
-			'touchcancel' : player.cursor.eventTouchUp,
-			'touchmove' : player.cursor.eventTouchMove
-		},
-
-		function(){
-			this.played = false;
-			em.reset();
-		},
-
-		function(delta){
-			player.update(delta);
-			em.update(delta);
-			
-			if(em.list.length === 0){
-				game.openGui(1);
-			}
-		},
-
-		function(){
-			player.drawBackground();
-			em.draw();
-			player.draw();
-			drawArrow();
-		}
-	));
-
-	game.guiList.push(new Gui({
-			'mousedown': player.cursor.eventDown,
-			'mouseup': player.cursor.eventUp,
-			'mouseout': player.cursor.eventUp,
-			'mousemove': player.cursor.eventMove,
-
-			'touchstart' : player.cursor.eventTouchDown,
-			'touchend' : player.cursor.eventTouchUp,
-			'touchcancel' : player.cursor.eventTouchUp,
-			'touchmove' : player.cursor.eventTouchMove
-		},
-
-		function(){
-			player.score = 0;
-			game.audioChan.play();
-		},
-
-		function(delta){
-			if( count <= 0 ){
-				count = 100;
-				em.spawn();
-
-			}else
-				count--;
-			
-			player.update(delta);
-			em.update(delta);
-		},
-
-		function(){
-			player.drawBackground();
-			em.draw();
-			player.draw();
-		}
-	));
-
-	game.openGui(0);*/
 }
 
 
@@ -152,16 +58,20 @@ function buildGuiLoader( game){
 
 			function( e){
 				self.loaded = true;
+
+				game.setAudioChan( AM.channel.inspiration);
+				em.setAudioChan( AM.channel.biup);
+				
 				game.openGui(GUI.MENU);
 			},
 
 			function( request, e, end){
 				if( e.type === 'load'){
-					request.loaded = request.total *1.2;
+					request.loaded = request.total *1.05;
 
 				}else{
 					request.loaded = e.loaded;
-					request.total = e.total *1.2;
+					request.total = e.total *1.05;
 				}
 
 				var total=0, loaded=0;
@@ -184,15 +94,15 @@ function buildGuiLoader( game){
 	//update
 	function( delta){
 		this.updateTime += delta;
+		player.shape.rotation += delta/1100;
 		
 		if(this.updateTime > 2500)
 			this.updateTime = 2500;
-		
-		console.log(this.progress *( 2500 -this.updateTime) +this.targetProgress *this.updateTime /2500);
 	},
 	
 	//render
 	function(){
+		player.drawBackground();
 		player.drawFromProgress( this.progress *( 2500 -this.updateTime) +this.targetProgress *this.updateTime /2500);
 	});
 	
@@ -200,37 +110,129 @@ function buildGuiLoader( game){
 }
 
 function buildGuiMenu( game){
-	return new Gui(
+	var gui = new Gui(
 		//OPEN
-		function(){
+		function( from){
+			if( from === GUI.LOADER){
+				var l = {
+					'mousedown': player.cursor.eventDown,
+					'mouseup': this.up,
+					'mouseout': this.up,
+					'mousemove': player.cursor.eventMove,
+					'touchstart' : player.cursor.eventDown,
+					'touchend' : this.up,
+					'touchcancel' : this.up,
+					'touchmove' : player.cursor.eventMove
+				};
+				
+				for(key in l)
+					window.addEventListener( key, l[key], false);
+			}
+			
+			/*em.pushEntity(new Entity(180, 0, 0, 
+						 	SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
+							COLOR[ Math.floor( Math.random() *COLOR.length) ] ) );*/
+			em.reset();
 		},
 		//CLOSE
-		function(){
+		function( to){
+			var l = {
+				'mousedown': this.down,
+				'mouseup': this.up,
+				'mouseout': this.up,
+				'touchstart' : this.down,
+				'touchend' : this.up,
+				'touchcancel' : this.up,
+			};
+
+			for(key in l)
+				window.removeEventListener( key, l[key], false);
 		},
 		//UPDATE
-		function(){
+		function(delta){
+			player.update(delta);
+			em.update(delta);
+
+			if(em.list.length === 0 && game.audioChan.state === game.audioChan.PLAY)
+				game.openGui(GUI.PLAY);
 		},
 		//RENDER
 		function(){
+			player.drawBackground();
+			em.draw();
+			player.draw();
+			drawArrow();
 		}
 	);
+	
+	gui.up = function(e){
+		player.cursor.up( e, this);
+
+		if(em.list.length === 0)
+			game.audioChan.play();
+	};
+	return gui; 
 }
 
 function buildGuiPlay( game){
-	return new Gui(
-			//OPEN
-			function(){
-			},
-			//CLOSE
-			function(){
-			},
-			//UPDATE
-			function(){
-			},
-			//RENDER
-			function(){
-			}
-		);
+	var gui = new Gui(
+		//OPEN
+		function( from){
+			var l = {
+					'mousedown': player.cursor.eventDown,
+					'mouseup': this.up,
+					'mouseout': this.up,
+					'touchstart' : player.cursor.eventDown,
+					'touchend' : this.up,
+					'touchcancel' : this.up,
+				};
+
+				for(key in l)
+					window.addEventListener( key, l[key], false);
+		},
+		
+		//CLOSE
+		function( to){
+			var l = {
+					'mousedown': player.cursor.eventDown,
+					'mouseup': this.up,
+					'mouseout': this.up,
+					'touchstart' : player.cursor.eventDown,
+					'touchend' : this.up,
+					'touchcancel' : this.up,
+				};
+
+				for(key in l)
+					window.removeEventListener( key, l[key], false);
+		},
+		
+		//UPDATE
+		function(delta){
+			if( count <= 0 ){
+				count = 150;
+				em.spawn();
+
+			}else
+				count--;
+
+			player.update(delta);
+			em.update(delta);
+		},
+		
+		//RENDER
+		function(){
+			player.drawBackground();
+			em.draw();
+			player.draw();
+		}
+	);
+	
+	gui.up = function(e){
+		player.cursor.up(e, this);
+		player.updateScore();
+	};
+	
+	return gui;
 }
 
 function buildGuiOptions( game){

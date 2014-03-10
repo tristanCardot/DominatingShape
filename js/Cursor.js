@@ -13,10 +13,6 @@ function Cursor(){
 	this.eventDown = function(e){ self.down(e, this); };
 	this.eventUp = function(e){ self.up(e, this); };
 	this.eventMove = function(e){ self.move(e, this); };
-
-	this.eventTouchDown = function(e){ self.touchDown(e, this); };
-	this.eventTouchUp = function(e){ self.touchUp(e, this); };
-	this.eventTouchMove = function(e){ self.touchMove(e, this); };
 	this.touchId = null;
 }
 
@@ -26,6 +22,15 @@ Cursor.prototype = {
 	 * @param {HTMLCanvasElement} node
 	 */
 	down : function(e, node){
+		if(e.clientX === undefined){
+			e.preventDefault();
+			
+			if(this.press)
+				return;
+			
+			e = e.touches.item(0);
+		}
+		
 		this.lastX = this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
 		this.lastY = this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
 
@@ -37,8 +42,12 @@ Cursor.prototype = {
 	 * @param {HTMLCanvasElement} node
 	 */
 	up : function(e, node){
+		if(e.clientX === undefined){
+			e.preventDefault();
+			e = e.touches.item(0);
+		}
+			
 		this.press = false;
-		player.updateScore();
 	},
 	
 	/**Lors du mouvement.
@@ -46,6 +55,10 @@ Cursor.prototype = {
 	 * @param {HTMLCanvasElement} node
 	 */
 	move : function(e, node){
+		if(e.clientX === undefined){
+			e.preventDefault();
+			e = e.touches.item(0);
+		}
 		
 		if(this.press){
 			this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;

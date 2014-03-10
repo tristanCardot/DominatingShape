@@ -28,13 +28,18 @@ EntityManager.prototype = {
 		this.list.push( new Entity(
 			SIZE -17.5,
 			rad +i *( PI2 /6),
-			1 /80,
+			1 /90,
 			SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
 			COLOR[ Math.floor( Math.random() *COLOR.length) ]
 		));
 
 		if(needMorph)
 			player.morphing(this.list[0]);
+	},
+	
+	pushEntity : function(entity){
+		
+		
 	},
 
 	update : function(delta){
@@ -55,9 +60,8 @@ EntityManager.prototype = {
 			if(this.list[i].update(delta)){
 				while(this.list.length !== 0)
 					this.remove(this.list[i]);
-				game.audioChan.pause();
-				game.audioChan.currentTime = 0.0;
-				game.openGui(0);
+				game.audioChan.stop();
+				game.openGui(GUI.MENU);
 				return;
 			}
 	},
@@ -151,7 +155,7 @@ EntityManager.prototype = {
 		
 		this.particles.push( particle );
 		
-		em.audioChan.replay();
+		em.audioChan.play();
 		
 		this.list.splice( this.list.indexOf(entity), 1);
 	},

@@ -86,13 +86,12 @@
 		window.addEventListener('pagehide', function(e){
 			game.stop();
 		}, false);
-		
-		
-	
+
+
 		CTX.translate(CANVAS.width/2, CANVAS.height/2);
 		CTX.lineWidth = .20;
 		CTX.font = '40px sans-serif';
-	
+
 		var player = new Player(),
 			em = new EntityManager(),
 			game = new Game();
