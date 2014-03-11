@@ -14,7 +14,7 @@ function Game(){
 Game.prototype = {
 	onload : function(){
 		this.guiList = buildGui(this);
-		console.log(this.guiList);
+		
 		this.openGui(GUI.LOADER);
 		this.start();
 	},
@@ -37,7 +37,7 @@ Game.prototype = {
 		
 	/**Mais en pause. */
 	stop : function(){
-		if(game.run){
+		if(this.run){
 			CTX.globalAlpha = .5;
 			CTX.fillStyle = '#000';
 			CTX.fillRect(-SIZE, -SIZE, SIZE*2, SIZE*2);
@@ -98,3 +98,26 @@ Game.prototype = {
 };
 
 var count = 5;
+
+function log(txt){
+	document.getElementById('log').innerHTML += txt+'|';
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

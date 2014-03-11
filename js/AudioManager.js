@@ -69,7 +69,10 @@ var AM =(function(){
 				am.ctx.decodeAudioData( readEvent.target.result, function( buffer){
 					am.channel[name] = new AudioChannel( am, buffer);
 					event.onload( request, e);
-				}, event.onerror);
+				},
+				function(){
+					event.onerror();
+				});
             };
 
 			reader.readAsArrayBuffer(request.response);
@@ -85,7 +88,12 @@ var AM =(function(){
 
 			this.gain = am.ctx.createGain();
 			this.gain.connect( am.ctx.destination);
-
+/*
+			this.analyser = am.ctx.createAnalyser();
+			this.analyser.smoothingTimeConstant = 0.85;
+			this.analyser.fftSize = 32;
+			this.analyser.connect(this.gain);*/
+			
 			this.filter = am.ctx.createBiquadFilter();
 			this.filter.connect( this.gain);
 
@@ -99,23 +107,20 @@ var AM =(function(){
 			PAUSE : 1,
 			PLAY : 2,
 
-			play : function( delay){
-				var self = this;
+			play : function(){
 				var source = this.ctx.createBufferSource();
 				source.loop = this.loop;
 				source.buffer = this.buffer;
 				source.connect(this.filter);
 				
 				source.onended = function(){
-					if(!this.loop){
-						self.state = self.STOP;
+					if(!this.loop)
 						this.disconnect( 0);
-					}
 				};
 
 				if( this.state === this.PAUSE){
 					this.timer.offset += this.ctx.currentTime -this.timer.paused;
-					source.noteGrainOn( 0, this.ctx.currentTime -this.timer.offset, 0);
+					source.start(0, this.ctx.currentTime- this.timer.offset);
 
 				}else{
 					if(this.played !== null){
@@ -124,7 +129,7 @@ var AM =(function(){
 					}
 
 					this.timer.offset = this.ctx.currentTime;
-					source.noteOn(0);
+					source.start(0);
 				}
 
 				window.source = source;
@@ -138,7 +143,7 @@ var AM =(function(){
 
 				this.state = this.PAUSE;
 				this.timer.paused = this.ctx.currentTime;
-				this.played.noteOff( 0);
+				this.played.stop( 0);
 			},
 			
 			stop : function(){
@@ -146,7 +151,7 @@ var AM =(function(){
 					return;
 
 				if( this.state === this.PLAY){
-					this.played.noteOff( 0);
+					this.played.stop( 0);
 					this.played.disconnect( 0);
 					this.played = null;
 				}

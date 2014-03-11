@@ -24,7 +24,7 @@ EntityManager.prototype = {
 		var needMorph = this.list.length === 0;
 		var rad = (Math.floor(Math.random()*6)*Math.PI/3 + player.shape.rotation) % PI2;
 		
-		for(var i=0; i<2; i++)
+		for(var i=0, end= 2+ Math.floor(Math.random()*2); i<end; i++)
 		this.list.push( new Entity(
 			SIZE -17.5,
 			rad +i *( PI2 /6),
@@ -44,7 +44,7 @@ EntityManager.prototype = {
 
 	update : function(delta){
 		var i, s;
-
+		
 		for(i=0; i<this.particles.length; i++){
 			s = this.particles[i];
 

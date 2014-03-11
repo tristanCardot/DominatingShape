@@ -42,10 +42,25 @@ function buildGuiLoader( game){
 
 		var self = this;
 		var list;
-		if(document.createElement('audio').canPlayType('audio/mp3') !== "")
+		
+		window.controler = new Controler();
+
+		
+		var l = {
+			touchstart : function(e){e.preventDefault();},
+			focus : function(e){game.start();},
+			pageshow : function(e){game.start();},
+			blur : function(e){game.stop();},
+			pagehide : function(e){game.stop();}
+		};
+		
+		for(key in l)
+			window.addEventListener( key, l[key], false);
+
+		if(document.createElement('audio').canPlayType('audio/ogg') !== "")
 			list = {
-				'inspiration' : 'audio/Inspiration.mp3',
-				'biup' : 'audio/biup.mp3'
+				'inspiration' : 'audio/Inspiration.ogg',
+				'biup' : 'audio/biup.ogg'
 			};
 		else
 			list = {
@@ -113,25 +128,23 @@ function buildGuiMenu( game){
 	var gui = new Gui(
 		//OPEN
 		function( from){
-			if( from === GUI.LOADER){
-				var l = {
-					'mousedown': player.cursor.eventDown,
-					'mouseup': this.up,
-					'mouseout': this.up,
-					'mousemove': player.cursor.eventMove,
-					'touchstart' : player.cursor.eventDown,
-					'touchend' : this.up,
-					'touchcancel' : this.up,
-					'touchmove' : player.cursor.eventMove
+			var l = {
+					mousedown : player.cursor.eventDown,
+					mouseup : this.up,
+					mouseout : this.up,
+					touchstart : player.cursor.eventDown,
+					touchend : this.up,
+					touchcancel : this.up
 				};
-				
-				for(key in l)
-					window.addEventListener( key, l[key], false);
-			}
 			
-			/*em.pushEntity(new Entity(180, 0, 0, 
-						 	SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
-							COLOR[ Math.floor( Math.random() *COLOR.length) ] ) );*/
+			if( from === GUI.LOADER){
+				l.mousemove = player.cursor.eventMove;
+				l.touchmove = player.cursor.eventMove;
+			}
+				
+			for(key in l)
+				window.addEventListener( key, l[key], false);
+
 			em.reset();
 		},
 		//CLOSE
@@ -209,7 +222,7 @@ function buildGuiPlay( game){
 		//UPDATE
 		function(delta){
 			if( count <= 0 ){
-				count = 150;
+				count = 140+ Math.floor(Math.random()*51);
 				em.spawn();
 
 			}else

@@ -44,6 +44,7 @@ Entity.prototype = {
 					this.range -= this.speed *delta;
 					this.time += delta;
 					this.rotation += delta /800;
+					this.angle += this.speed /delta /120;
 					
 					this.scale = 17.5 +Math.sin( this.time /150) *.75;
 				break;

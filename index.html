@@ -15,9 +15,20 @@
 			height:100%;
 			width:100%;
 		}
+		
+		div#log{
+			position: absolute;
+			top: 0px;
+			left:0px;
+			color:white;
+			z-index: 10;
+			
+			background-color: rgba( 0, 0, 0, .5);
+		}
 	</style>
 	
 	<script type="text/javascript" charset="UTF-8" src="js/AudioManager.js"></script>
+	<script type="text/javascript" charset="UTF-8" src="js/Controler.js"></script>
 	
 	<script type="text/javascript" charset="UTF-8" src="js/Color.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/Shape.js"></script>
@@ -72,22 +83,6 @@
 			SCALE.y = window.innerHeight /( SIZE *2);
 		}, false);
 	
-		window.addEventListener('focus', function(e){
-			game.start();
-		}, false);
-		window.addEventListener('pageshow', function(e){
-			game.start();
-		}, false);
-		
-
-		window.addEventListener('blur', function(e){
-			game.stop();
-		}, false);
-		window.addEventListener('pagehide', function(e){
-			game.stop();
-		}, false);
-
-
 		CTX.translate(CANVAS.width/2, CANVAS.height/2);
 		CTX.lineWidth = .20;
 		CTX.font = '40px sans-serif';
@@ -98,7 +93,7 @@
 	</script>
 </head>
 <body>
-	<div id='options'>
+	<div id='log'>
 		
 	</div>
 </body>

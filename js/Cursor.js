@@ -23,8 +23,6 @@ Cursor.prototype = {
 	 */
 	down : function(e, node){
 		if(e.clientX === undefined){
-			e.preventDefault();
-			
 			if(this.press)
 				return;
 			
@@ -43,7 +41,6 @@ Cursor.prototype = {
 	 */
 	up : function(e, node){
 		if(e.clientX === undefined){
-			e.preventDefault();
 			e = e.touches.item(0);
 		}
 			
@@ -56,7 +53,6 @@ Cursor.prototype = {
 	 */
 	move : function(e, node){
 		if(e.clientX === undefined){
-			e.preventDefault();
 			e = e.touches.item(0);
 		}
 		
@@ -64,33 +60,6 @@ Cursor.prototype = {
 			this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
 			this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
 		}
-	},
-	
-	touchDown : function(e, node){
-		e.preventDefault();
-		
-		if(this.press)
-			return;
-		
-		var select = e.touches[ e.touches.length -1 ];
-		this.touchId = select.identifier;
-		
-		this.down( select , node);
-	},
-	
-	touchMove : function(e, node){
-		e.preventDefault();
-		
-		var select = e.touches.item(0);
-		
-		this.move(select,  node);
-	},
-	
-	touchUp : function(e, node){
-		e.preventDefault();
-		var select = e.touches.item(0);
-		
-		this.up(select,  node);
 	},
 
 	getSegment : function(){
