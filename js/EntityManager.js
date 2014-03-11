@@ -21,21 +21,30 @@ EntityManager.prototype = {
 	},
 	
 	spawn : function(){
+		var needMorph = this.list.length === 0;
+		var rad = (Math.floor(Math.random()*6)*Math.PI/3 + player.shape.rotation) % PI2;
+		
+		for(var i=0, end= 2+ Math.floor(Math.random()*2); i<end; i++)
 		this.list.push( new Entity(
-			SIZE-17.5,
-			(Math.floor(Math.random()*6)*Math.PI/3 + player.shape.rotation) % PI2,
-			1/80,
+			SIZE -17.5,
+			rad +i *( PI2 /6),
+			1 /90,
 			SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
 			COLOR[ Math.floor( Math.random() *COLOR.length) ]
 		));
-		
-		if(this.list.length === 1)
+
+		if(needMorph)
 			player.morphing(this.list[0]);
+	},
+	
+	pushEntity : function(entity){
+		
+		
 	},
 
 	update : function(delta){
 		var i, s;
-
+		
 		for(i=0; i<this.particles.length; i++){
 			s = this.particles[i];
 
@@ -51,8 +60,8 @@ EntityManager.prototype = {
 			if(this.list[i].update(delta)){
 				while(this.list.length !== 0)
 					this.remove(this.list[i]);
-				
-				game.openGui(1);
+				game.audioChan.stop();
+				game.openGui(GUI.MENU);
 				return;
 			}
 	},
@@ -145,15 +154,14 @@ EntityManager.prototype = {
 			particle.add( x, y , 0.008*i+0.14 );
 		
 		this.particles.push( particle );
-
-		this.audioChan.currentTime = 0;
-		this.audioChan.play();
+		
+		em.audioChan.play();
 		
 		this.list.splice( this.list.indexOf(entity), 1);
 	},
 	
 	setAudioChan : function(audio){
+		audio.volume = .5;
 		this.audioChan = audio;
-		this.audioChan.volume = .8;
 	}
 };

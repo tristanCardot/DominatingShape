@@ -8,9 +8,17 @@ function Game(){
 	this.guiList = [];
 	
 	this.activeGui = undefined;
+	this.activeGuiId = GUI.NONE;
 }
 
 Game.prototype = {
+	onload : function(){
+		this.guiList = buildGui(this);
+		
+		this.openGui(GUI.LOADER);
+		this.start();
+	},
+
 	/**Mais en route. */
 	start : function(){
 		if(this.run)
@@ -19,27 +27,42 @@ Game.prototype = {
 		this.run = true;
 		this.lastUpdate = Date.now();
 		
-		this.audioChan.play();
-		
+		try{
+			this.audioChan.play();
+		}catch(e)
+			{}
+
 		this.update(this);
 	},
 		
 	/**Mais en pause. */
 	stop : function(){
-		this.run = false;
+		if(this.run){
+			CTX.globalAlpha = .5;
+			CTX.fillStyle = '#000';
+			CTX.fillRect(-SIZE, -SIZE, SIZE*2, SIZE*2);
+
+			CTX.fillStyle = '#FFF';
+			CTX.fillRect(-20, -25, 15, 50);
+			CTX.fillRect(5, -25, 15, 50);
+
+			CTX.globalAlpha = 1;
+		}
+		
 		this.audioChan.pause();
+		this.run = false;
 	},
 	
-	/**Mais à jour la gui courante. 
-	 * @param {Game} self 
+	/**Mais à jour la gui courante.
+	 * @param {Game} self
 	 */
 	update : function(self){
 		if(!this.run)
 			return;
-		
+
 		if(this.activeGui === undefined)
 			return this.stop();
-			
+
 		var delta = Date.now() - this.lastUpdate;
 		this.lastUpdate = Date.now();
 		
@@ -54,21 +77,47 @@ Game.prototype = {
 	 */
 	openGui : function(id){
 		if(this.activeGui !== undefined)
-			this.activeGui.removeEvent();
+			this.activeGui.close(id);
 		
 		this.activeGui = this.guiList[id];
 		
 		if(this.activeGui !== undefined){
-			this.activeGui.init();
-			this.activeGui.bindEvent();
-		}
+			this.activeGui.open(this.activeGuiId);
+			this.activeGuiId = id;
+			
+		}else
+			this.activeGuiId = GUI.NONE;
 	},
 	
-	setAudioChan : function(audio){console.log(audio);
+	setAudioChan : function(audio){
+		audio.loop = true;
+		audio.volume = .5;
+		
 		this.audioChan = audio;
-		this.audioChan.loop = true;
-		this.audioChan.volume = .8;
 	}
 };
 
 var count = 5;
+
+function log(txt){
+	document.getElementById('log').innerHTML += txt+'|';
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

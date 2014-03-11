@@ -13,10 +13,6 @@ function Cursor(){
 	this.eventDown = function(e){ self.down(e, this); };
 	this.eventUp = function(e){ self.up(e, this); };
 	this.eventMove = function(e){ self.move(e, this); };
-
-	this.eventTouchDown = function(e){ self.touchDown(e, this); };
-	this.eventTouchUp = function(e){ self.touchUp(e, this); };
-	this.eventTouchMove = function(e){ self.touchMove(e, this); };
 	this.touchId = null;
 }
 
@@ -26,50 +22,44 @@ Cursor.prototype = {
 	 * @param {HTMLCanvasElement} node
 	 */
 	down : function(e, node){
+		if(e.clientX === undefined){
+			if(this.press)
+				return;
+			
+			e = e.touches.item(0);
+		}
+		
 		this.lastX = this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
 		this.lastY = this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
 
-		this.press = Math.sqrt( this.x *this.x + this.y *this.y ) < 20;
+		this.press = Math.sqrt( this.x *this.x + this.y *this.y ) < 35;
 	},
 	
-	/**Lors du relachement. 
+	/**Lors du relachement.
 	 * @param {Event} e 
 	 * @param {HTMLCanvasElement} node
 	 */
 	up : function(e, node){
+		if(e.clientX === undefined){
+			e = e.touches.item(0);
+		}
+			
 		this.press = false;
-		player.updateScore();
 	},
 	
-	/**Lors du mouvement. 
+	/**Lors du mouvement.
 	 * @param {Event} e 
 	 * @param {HTMLCanvasElement} node
 	 */
 	move : function(e, node){
+		if(e.clientX === undefined){
+			e = e.touches.item(0);
+		}
+		
 		if(this.press){
 			this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
 			this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
 		}
-	},
-	
-	touchDown : function(e, node){
-		if(this.press)
-			return;
-
-		var select = e.touches[ e.touches.length -1 ];
-		this.touchId = select.identifier;
-		
-		this.down( select , node);
-	},
-	
-	touchMove : function(e, node){
-		var select = e.identifiedTouch( this.touchId );
-		this.move(select,  node);
-	},
-	
-	touchUp : function(e, node){
-		var select = e.identifiedTouch( this.touchId );
-		this.up(select,  node);
 	},
 
 	getSegment : function(){

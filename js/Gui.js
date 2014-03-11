@@ -1,138 +1,270 @@
 /**@constructor
- * @param {Object} event
- * @param {Function} init
+ * @param {Function} open
+ * @param {Function} close
  * @param {Function} update
  * @param {Function} render
  */
-function Gui(event, init, update, render){
-	this.event = event;
-	this.init = init;
+function Gui( open, close, update, render){
+	this.open = open;
+	this.close = close;
 	this.update = update;
 	this.render = render;
 }
 
-Gui.prototype = {
-	/**Lie les événements lié à la gui. */
-	bindEvent : function(){
-		for(key in this.event)
-			window.addEventListener(key, this.event[key], false);
-	},
-
-	/**Retire les événements lié à la gui. */
-	removeEvent : function(){
-		for(key in this.event)
-			window.removeEventListener(key, this.event[key], false);
-	}
+window.GUI = {
+	NONE : -1,
+	LOADER : 0,
+	MENU : 1,
+	PLAY : 2,
+	OPTIONS : 3
 };
 
-/**Construit les différentes gui.
- * @param {Game} game
- */
-function buildGui(game){
-	am.load('biup', window.location.href +'audio/biup.mp3', 'audio/mp3');
-	am.load('inspiration',  window.location.href +'audio/Inspiration.mp3', 'audio/mp3');
-	em.setAudioChan( am.get('biup'));
-	game.setAudioChan( am.get('inspiration'));
-	
-	game.guiList.push(new Gui({
-		},
-		
-		function(){
-			player.morphing(new Entity(
-				0,
-				0,
-				0,
-				SHAPE[ SHAPE.TRIANGLE ],
-				COLOR[ Math.floor( Math.random() *COLOR.length) ]
-			));
-			
-			this.progress = 0;
-		},
-		
-		function(delta){
-			player.update(delta);
-			this.progress += delta /10000;
+function buildGui( game){	
+	return [ 
+		buildGuiLoader( game),
+		buildGuiMenu( game),
+		buildGuiPlay( game),
+		buildGuiOptions( game)
+	];
+}
 
-			if(this.progress > 1)
-				game.openGui(1);
-		},
+
+function buildGuiLoader( game){
+	var gui = new Gui(
+	//open
+	function(){
+		if(this.loaded === true)
+			return;
+
+		this.updateTime = 0;
+		this.targetProgress = 0;
+		this.progress = 0;
+
+		var self = this;
+		var list;
 		
-		function(){
-			player.drawBackground();
-			player.drawFromProgress(this.progress);
-		}
-	));
+		window.controler = new Controler();
+
+		
+		var l = {
+			touchstart : function(e){e.preventDefault();},
+			focus : function(e){game.start();},
+			pageshow : function(e){game.start();},
+			blur : function(e){game.stop();},
+			pagehide : function(e){game.stop();}
+		};
+		
+		for(key in l)
+			window.addEventListener( key, l[key], false);
+
+		if(document.createElement('audio').canPlayType('audio/ogg') !== "")
+			list = {
+				'inspiration' : 'audio/Inspiration.ogg',
+				'biup' : 'audio/biup.ogg'
+			};
+		else
+			list = {
+				'inspiration' : 'audio/Inspiration.mp3',
+				'biup' : 'audio/biup.mp3'
+			};
+		
+		AM.loadList(
+			list,
+
+			function( e){
+				self.loaded = true;
+
+				game.setAudioChan( AM.channel.inspiration);
+				em.setAudioChan( AM.channel.biup);
+				
+				game.openGui(GUI.MENU);
+			},
+
+			function( request, e, end){
+				if( e.type === 'load'){
+					request.loaded = request.total *1.05;
+
+				}else{
+					request.loaded = e.loaded;
+					request.total = e.total *1.05;
+				}
+
+				var total=0, loaded=0;
+				for(var i=0; i<this.files.length; i++){
+					loaded += this.files[i].loaded || 0;
+					total += this.files[i].total || 1000000;
+				}
+				
+				self.updateTime = 0;
+				self.targetProgress = loaded /total;
+			}
+		);
+	},
 	
-	game.guiList.push(new Gui({
-			'mousedown': player.cursor.eventDown,
-			'mouseup': player.cursor.eventUp,
-			'mouseout': player.cursor.eventUp,
-			'mousemove': player.cursor.eventMove,
+	//close
+	function(){
+		
+	},
 	
-			'touchstart' : player.cursor.eventTouchDown,
-			'touchsend' : player.cursor.eventTouchUp,
-			'touchcancel' : player.cursor.eventTouchUp,
-			'touchmove' : player.cursor.eventTouchMove
-		},
+	//update
+	function( delta){
+		this.updateTime += delta;
+		player.shape.rotation += delta/1100;
+		
+		if(this.updateTime > 2500)
+			this.updateTime = 2500;
+	},
 	
-		function(){
+	//render
+	function(){
+		player.drawBackground();
+		player.drawFromProgress( this.progress *( 2500 -this.updateTime) +this.targetProgress *this.updateTime /2500);
+	});
+	
+	return gui;
+}
+
+function buildGuiMenu( game){
+	var gui = new Gui(
+		//OPEN
+		function( from){
+			var l = {
+					mousedown : player.cursor.eventDown,
+					mouseup : this.up,
+					mouseout : this.up,
+					touchstart : player.cursor.eventDown,
+					touchend : this.up,
+					touchcancel : this.up
+				};
+			
+			if( from === GUI.LOADER){
+				l.mousemove = player.cursor.eventMove;
+				l.touchmove = player.cursor.eventMove;
+			}
+				
+			for(key in l)
+				window.addEventListener( key, l[key], false);
+
 			em.reset();
 		},
-		
+		//CLOSE
+		function( to){
+			var l = {
+				'mousedown': this.down,
+				'mouseup': this.up,
+				'mouseout': this.up,
+				'touchstart' : this.down,
+				'touchend' : this.up,
+				'touchcancel' : this.up,
+			};
+
+			for(key in l)
+				window.removeEventListener( key, l[key], false);
+		},
+		//UPDATE
 		function(delta){
 			player.update(delta);
 			em.update(delta);
-			
-			if(em.list.length === 0){
-				game.openGui(2);
-			}
+
+			if(em.list.length === 0 && game.audioChan.state === game.audioChan.PLAY)
+				game.openGui(GUI.PLAY);
 		},
-		
+		//RENDER
 		function(){
 			player.drawBackground();
 			em.draw();
 			player.draw();
 			drawArrow();
 		}
-	));
+	);
 	
-	game.guiList.push(new Gui({
-			'mousedown': player.cursor.eventDown,
-			'mouseup': player.cursor.eventUp,
-			'mouseout': player.cursor.eventUp,
-			'mousemove': player.cursor.eventMove,
+	gui.up = function(e){
+		player.cursor.up( e, this);
 
-			'touchstart' : player.cursor.eventTouchDown,
-			'touchsend' : player.cursor.eventTouchUp,
-			'touchcancel' : player.cursor.eventTouchUp,
-			'touchmove' : player.cursor.eventTouchMove
-		},
+		if(em.list.length === 0)
+			game.audioChan.play();
+	};
+	return gui; 
+}
 
-		function(){
-			player.score = 0;
+function buildGuiPlay( game){
+	var gui = new Gui(
+		//OPEN
+		function( from){
+			var l = {
+					'mousedown': player.cursor.eventDown,
+					'mouseup': this.up,
+					'mouseout': this.up,
+					'touchstart' : player.cursor.eventDown,
+					'touchend' : this.up,
+					'touchcancel' : this.up,
+				};
+
+				for(key in l)
+					window.addEventListener( key, l[key], false);
 		},
 		
+		//CLOSE
+		function( to){
+			var l = {
+					'mousedown': player.cursor.eventDown,
+					'mouseup': this.up,
+					'mouseout': this.up,
+					'touchstart' : player.cursor.eventDown,
+					'touchend' : this.up,
+					'touchcancel' : this.up,
+				};
+
+				for(key in l)
+					window.removeEventListener( key, l[key], false);
+		},
+		
+		//UPDATE
 		function(delta){
 			if( count <= 0 ){
-				count = 50;
+				count = 140+ Math.floor(Math.random()*51);
 				em.spawn();
+
 			}else
 				count--;
-			
+
 			player.update(delta);
 			em.update(delta);
-			
 		},
 		
+		//RENDER
 		function(){
 			player.drawBackground();
 			em.draw();
 			player.draw();
 		}
-	));
-
-	game.openGui(0);
+	);
+	
+	gui.up = function(e){
+		player.cursor.up(e, this);
+		player.updateScore();
+	};
+	
+	return gui;
 }
+
+function buildGuiOptions( game){
+	return new Gui(
+			//OPEN
+			function(){
+			},
+			//CLOSE
+			function(){
+			},
+			//UPDATE
+			function(){
+			},
+			//RENDER
+			function(){
+			}
+		);
+}
+
 
 
 function drawArrow(){
@@ -149,9 +281,7 @@ function drawArrow(){
 	
 	CTX.fill();
 }
-
-
-
+	
 
 
 

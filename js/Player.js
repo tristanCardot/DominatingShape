@@ -22,7 +22,7 @@ Player.prototype = {
 			rad = this.shape.rads[i] -0.005;
 			toRad = this.shape.rads[i+1];
 			
-			CTX.fillStyle = this.color.evaluate( this.shape.values[i] );
+			CTX.fillStyle = this.color.evaluate( this.shape.values[i]);
 			
 			CTX.beginPath();
 			CTX.moveTo( 0, 0 );
@@ -83,17 +83,16 @@ Player.prototype = {
 		this.shape.draw();
 
 		CTX.fillStyle = this.color.evaluate(1);
-		CTX.fillText(this.score, -200, 197);
+		CTX.fillText(this.score, -200, -170);
 	},
 	
 	/**Dessine la barre de progression. */
 	drawFromProgress : function(progress){
-		CTX.fillStyle = this.color.evaluate(progress);
-		CTX.strokeStyle = this.color.evaluate(1);
+		CTX.fillStyle = this.color.evaluate(.4);
+		CTX.strokeStyle = this.color.evaluate(progress);
 
 		this.shape.draw();
-		
-		
+
 	},
 	
 	updateScore : function(){
@@ -324,6 +323,19 @@ ShapeP.prototype = {
 		}
 	}
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
