@@ -161,7 +161,26 @@ EntityManager.prototype = {
 	},
 	
 	setAudioChan : function(audio){
-		audio.volume = .5;
+		audio.volume = .1;
 		this.audioChan = audio;
 	}
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

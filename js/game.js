@@ -26,11 +26,6 @@ Game.prototype = {
 
 		this.run = true;
 		this.lastUpdate = Date.now();
-		
-		try{
-			this.audioChan.play();
-		}catch(e)
-			{}
 
 		this.update(this);
 	},
@@ -91,7 +86,7 @@ Game.prototype = {
 	
 	setAudioChan : function(audio){
 		audio.loop = true;
-		audio.volume = .5;
+		audio.volume = .2;
 		
 		this.audioChan = audio;
 	}

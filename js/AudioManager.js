@@ -88,14 +88,14 @@ var AM =(function(){
 
 			this.gain = am.ctx.createGain();
 			this.gain.connect( am.ctx.destination);
-/*
+
 			this.analyser = am.ctx.createAnalyser();
 			this.analyser.smoothingTimeConstant = 0.85;
 			this.analyser.fftSize = 32;
-			this.analyser.connect(this.gain);*/
+			this.analyser.connect(this.gain);
 			
 			this.filter = am.ctx.createBiquadFilter();
-			this.filter.connect( this.gain);
+			this.filter.connect( this.analyser);
 
 			this.volume = 1;
 			this.filterFreq = 22000;

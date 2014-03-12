@@ -47,11 +47,7 @@ function buildGuiLoader( game){
 
 		
 		var l = {
-			touchstart : function(e){e.preventDefault();},
-			focus : function(e){game.start();},
-			pageshow : function(e){game.start();},
-			blur : function(e){game.stop();},
-			pagehide : function(e){game.stop();}
+			touchstart : function(e){e.preventDefault();}
 		};
 		
 		for(key in l)
@@ -59,7 +55,7 @@ function buildGuiLoader( game){
 
 		if(document.createElement('audio').canPlayType('audio/ogg') !== "")
 			list = {
-				'inspiration' : 'audio/Inspiration.ogg',
+				'inspiration' : 'audio/B-3.mp3',
 				'biup' : 'audio/biup.ogg'
 			};
 		else
@@ -198,38 +194,47 @@ function buildGuiPlay( game){
 					'touchstart' : player.cursor.eventDown,
 					'touchend' : this.up,
 					'touchcancel' : this.up,
+					
+					'pagehide' : this.pause,
+					'blur' : this.pause
 				};
 
-				for(key in l)
+				for( key in l )
 					window.addEventListener( key, l[key], false);
 		},
 		
 		//CLOSE
 		function( to){
 			var l = {
-					'mousedown': player.cursor.eventDown,
-					'mouseup': this.up,
-					'mouseout': this.up,
-					'touchstart' : player.cursor.eventDown,
-					'touchend' : this.up,
-					'touchcancel' : this.up,
-				};
+				'mousedown': player.cursor.eventDown,
+				'mouseup': this.up,
+				'mouseout': this.up,
+				'touchstart' : player.cursor.eventDown,
+				'touchend' : this.up,
+				'touchcancel' : this.up,
+				
+				'pagehide' : this.pause,
+				'blur' : this.pause
+			};
 
-				for(key in l)
-					window.removeEventListener( key, l[key], false);
+			for( key in l )
+				window.removeEventListener( key, l[key], false);
 		},
 		
 		//UPDATE
 		function(delta){
+			
+			controler.update();
 			if( count <= 0 ){
-				count = 140+ Math.floor(Math.random()*51);
+				count = 200 +Math.floor( Math.random() *20);
 				em.spawn();
 
 			}else
 				count--;
 
-			player.update(delta);
-			em.update(delta);
+			player.update( delta);
+			controler.updateEntities( em.list);
+			em.update( delta);
 		},
 		
 		//RENDER
@@ -237,12 +242,31 @@ function buildGuiPlay( game){
 			player.drawBackground();
 			em.draw();
 			player.draw();
+			controler.draw();
 		}
 	);
 	
 	gui.up = function(e){
 		player.cursor.up(e, this);
 		player.updateScore();
+	};
+
+	gui.resume = function(e){
+		window.removeEventListener( 'mouseup', gui.resume, false);
+		window.removeEventListener( 'touchend', gui.resume, false);
+		
+		game.start();
+		game.audioChan.play();
+	};
+
+	gui.bindResume = function(){
+		window.addEventListener( 'mouseup', gui.resume, false);
+		window.addEventListener( 'touchend', gui.resume, false);
+	};
+	
+	gui.pause = function(e){
+		game.stop();
+		gui.bindResume();
 	};
 	
 	return gui;

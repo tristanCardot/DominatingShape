@@ -40,7 +40,7 @@ Player.prototype = {
 	 * @param {Number} delta
 	 */
 	update : function(delta){
-		this.shape.rotation += Math.PI/3000*delta;
+		this.shape.rotation += Math.PI /3000 *delta -controler.rotationSpeed;
 		
 		this.color.update(delta);
 		this.shape.update(delta);
