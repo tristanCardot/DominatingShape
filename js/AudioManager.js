@@ -91,7 +91,7 @@ var AM =(function(){
 
 			this.analyser = am.ctx.createAnalyser();
 			this.analyser.smoothingTimeConstant = 0.85;
-			this.analyser.fftSize = 32;
+			this.analyser.fftSize = 64;
 			this.analyser.connect(this.gain);
 			
 			this.filter = am.ctx.createBiquadFilter();

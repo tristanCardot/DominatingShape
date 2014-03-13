@@ -9,8 +9,8 @@ Controler.prototype = {
 	update : function(delta){
 		var d = this.data = getAudioData();
 
-		this.rotationSpeed = ( ( ( d[0] %64) +( d[1] %128) -( d[3] %256)) /( 256) ) *.02;
-		this.speed = ( ( ( d[5] %64) +( d[9] %64) +( d[15] %64) ) /( 64 *3) ) *.02;
+		this.rotationSpeed = ( ( ( d[0] %64) +( d[1] %128) -( d[3] %256)) /( 256) ) *.05;
+		this.speed = ( ( ( d[5] %64) +( d[9] %64) +( d[15] %64) ) /( 64 *3) ) *.05;
 		
 	},
 

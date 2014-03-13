@@ -31,91 +31,88 @@ function buildGui( game){
 
 function buildGuiLoader( game){
 	var gui = new Gui(
-	//open
-	function(){
-		if(this.loaded === true)
-			return;
-
-		this.updateTime = 0;
-		this.targetProgress = 0;
-		this.progress = 0;
-
-		var self = this;
-		var list;
-		
-		window.controler = new Controler();
-
-		
-		var l = {
-			touchstart : function(e){e.preventDefault();}
-		};
-		
-		for(key in l)
-			window.addEventListener( key, l[key], false);
-
-		if(document.createElement('audio').canPlayType('audio/ogg') !== "")
-			list = {
-				'inspiration' : 'audio/B-3.mp3',
-				'biup' : 'audio/biup.ogg'
-			};
-		else
-			list = {
-				'inspiration' : 'audio/Inspiration.mp3',
-				'biup' : 'audio/biup.mp3'
-			};
-		
-		AM.loadList(
-			list,
-
-			function( e){
-				self.loaded = true;
-
-				game.setAudioChan( AM.channel.inspiration);
-				em.setAudioChan( AM.channel.biup);
+		//open
+		function(){
+	
+			this.updateTime = 0;
+			this.targetProgress = 0;
+			this.progress = 0;
+	
+			var self = this;
+			
+			window.controler = new Controler();
+			
+			if(this.list == null)
+				return;
 				
-				game.openGui(GUI.MENU);
-			},
-
-			function( request, e, end){
-				if( e.type === 'load'){
-					request.loaded = request.total *1.05;
-
-				}else{
-					request.loaded = e.loaded;
-					request.total = e.total *1.05;
+			AM.loadList(
+				this.list,
+	
+				function( e){
+	
+					game.setAudioChan( AM.channel.inspiration);
+					em.setAudioChan( AM.channel.biup);
+					
+					game.openGui(GUI.MENU);
+				},
+	
+				function( request, e, end){
+					if( e.type === 'load'){
+						request.loaded = request.total *1.05;
+	
+					}else{
+						request.loaded = e.loaded;
+						request.total = e.total *1.05;
+					}
+	
+					var total=0, loaded=0;
+					for(var i=0; i<this.files.length; i++){
+						loaded += this.files[i].loaded || 0;
+						total += this.files[i].total || 1000000;
+					}
+					
+					self.updateTime = 0;
+					self.targetProgress = loaded /total;
 				}
+			);
+		},
+		
+		//close
+		function(){
+			
+		},
+		
+		//update
+		function( delta){
+			this.updateTime += delta;
+			player.shape.rotation += delta/1100;
+			
+			if(this.updateTime > 2500)
+				this.updateTime = 2500;
+		},
+		
+		//render
+		function(){
+			player.drawBackground();
+			player.drawFromProgress( this.progress *( 2500 -this.updateTime) +this.targetProgress *this.updateTime /2500);
+		}
+	);
+	
+	gui.loadList = function(data){
+		this.list = {};
+		var ex = '.ogg';
 
-				var total=0, loaded=0;
-				for(var i=0; i<this.files.length; i++){
-					loaded += this.files[i].loaded || 0;
-					total += this.files[i].total || 1000000;
-				}
-				
-				self.updateTime = 0;
-				self.targetProgress = loaded /total;
-			}
-		);
-	},
-	
-	//close
-	function(){
+		if(document.createElement('audio').canPlayType('audio/mp3') !== "")
+			ex = '.mp3';
 		
-	},
+		for(key in data)
+			this.list[key] = 'audio/'+ data[key] +ex;
+	};
 	
-	//update
-	function( delta){
-		this.updateTime += delta;
-		player.shape.rotation += delta/1100;
-		
-		if(this.updateTime > 2500)
-			this.updateTime = 2500;
-	},
-	
-	//render
-	function(){
-		player.drawBackground();
-		player.drawFromProgress( this.progress *( 2500 -this.updateTime) +this.targetProgress *this.updateTime /2500);
-	});
+	gui.loadLink = function(key, url){
+		this.list = {};
+		this.list[key] = url;
+	};
 	
 	return gui;
 }
@@ -274,21 +271,20 @@ function buildGuiPlay( game){
 
 function buildGuiOptions( game){
 	return new Gui(
-			//OPEN
-			function(){
-			},
-			//CLOSE
-			function(){
-			},
-			//UPDATE
-			function(){
-			},
-			//RENDER
-			function(){
-			}
-		);
+		//OPEN
+		function(){
+		},
+		//CLOSE
+		function(){
+		},
+		//UPDATE
+		function(){
+		},
+		//RENDER
+		function(){
+		}
+	);
 }
-
 
 
 function drawArrow(){

@@ -14,6 +14,15 @@ function Game(){
 Game.prototype = {
 	onload : function(){
 		this.guiList = buildGui(this);
+
+		window.addEventListener('touchstart',
+			function(e){e.preventDefault();},
+			false);
+
+		this.guiList[GUI.LOADER].loadList({
+			inspiration : 'darkness',
+			biup : 'biup'
+		});
 		
 		this.openGui(GUI.LOADER);
 		this.start();
