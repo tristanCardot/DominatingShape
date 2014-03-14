@@ -290,14 +290,19 @@ function buildGuiOptions( game){
 function drawArrow(){
 	CTX.globalAlpha = .6;
 	CTX.fillStyle = '#FFF';
-	CTX.moveTo(130, 0);
+	
+	CTX.scale(SCALE.x, SCALE.x);
+	
+	CTX.moveTo(75, 0);
 
-	CTX.lineTo(110, -20);
-	CTX.lineTo(110, -10);
-	CTX.lineTo(30, -8);
-	CTX.lineTo(30, 8);
-	CTX.lineTo(110, 10);
-	CTX.lineTo(110, 20);
+	CTX.lineTo(65, -10);
+	CTX.lineTo(65, -5);
+	CTX.lineTo(15, -3);
+	CTX.lineTo(15, 3);
+	CTX.lineTo(65, 5);
+	CTX.lineTo(65, 10);
+	
+	CTX.scale(1/SCALE.x, 1/SCALE.x);
 	
 	CTX.fill();
 }

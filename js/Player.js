@@ -15,8 +15,22 @@ Player.prototype = {
 	/** Dessine le font.*/
 	drawBackground : function(){
 		var length = this.shape.rads.length -1;
-
+		
+		var min, max;
+		
+		if(CANVAS.height < CANVAS.width){
+			min = CANVAS.height;
+			max = CANVAS.width;
+			
+		}else{
+			min = CANVAS.width;
+			max = CANVAS.height;
+		}
+		
+		max = max /2 *( max /min);
+		
 		CTX.rotate(this.shape.rotation);
+		CTX.globalAlpha = .55;
 		
 		for(var i=0, rad, toRad; i<length; i++){
 			rad = this.shape.rads[i] -0.005;
@@ -26,13 +40,14 @@ Player.prototype = {
 			
 			CTX.beginPath();
 			CTX.moveTo( 0, 0 );
-			CTX.lineTo( Math.sin(rad) *SIZESQRT, -Math.cos(rad) *SIZESQRT );
-			CTX.lineTo( Math.sin( ( rad +toRad ) /2) *SIZE *2, -Math.cos( ( rad +toRad ) /2 ) *SIZE *2 );
-			CTX.lineTo( Math.sin(toRad) *SIZESQRT, -Math.cos(toRad) *SIZESQRT );
+			CTX.lineTo( Math.sin(rad) *max, -Math.cos(rad) *max );
+			CTX.lineTo( Math.sin( ( rad +toRad ) /2) *max *2, -Math.cos( ( rad +toRad ) /2 ) *max *2 );
+			CTX.lineTo( Math.sin(toRad) *max, -Math.cos(toRad) *max );
 			CTX.closePath();
 			CTX.fill();
 		}
 
+		CTX.globalAlpha = 1;
 		CTX.rotate(-this.shape.rotation);
 	},
 	
@@ -49,7 +64,7 @@ Player.prototype = {
 		this.particle.update(delta);
 		
 		if(this.cursor.press){
-			this.particle.add(this.cursor.x, this.cursor.y);
+			this.particle.add(this.cursor.x *SCALE.x, this.cursor.y *SCALE.y);
 			
 			var segment = this.cursor.getSegment();
 			var list = em.getCollide(segment.from, segment.to);
@@ -69,7 +84,7 @@ Player.prototype = {
 	morphing : function(target){
 		if(!target)
 			return;
-		
+
 		this.shape.morphing(target.shape);
 		this.color.morphing(target.color);
 	},
@@ -83,7 +98,7 @@ Player.prototype = {
 		this.shape.draw();
 
 		CTX.fillStyle = this.color.evaluate(1);
-		CTX.fillText(this.score, -200, -170);
+		CTX.fillText(this.score, -CANVAS.width /2, -CANVAS.height /2 + 20 *SCALE.min *.75);
 	},
 	
 	/**Dessine la barre de progression. */
@@ -179,7 +194,7 @@ function ShapeP(id){
 	this.values = [];
 	
 	this.rotation = 0;
-	this.scale = 20;
+	this.scale = 10;
 	
 	for(var i=0; i<this.sides; i++){
 		this.rads.push(PI2 /this.sides *i);
@@ -199,7 +214,7 @@ ShapeP.prototype = {
 	/**Dessine la forme du joueur.*/
 	draw : function(){
 		CTX.rotate( this.rotation );
-		CTX.scale( this.scale, this.scale);
+		CTX.scale( this.scale *SCALE.min, this.scale *SCALE.min);
 		
 		CTX.beginPath();
 		
@@ -213,7 +228,7 @@ ShapeP.prototype = {
 		CTX.fill();
 		CTX.stroke();
 		
-		CTX.scale( 1 /this.scale, 1/this.scale );
+		CTX.scale( 1 /( this.scale *SCALE.min), 1/( this.scale *SCALE.min));
 		CTX.rotate( -this.rotation );
 	},
 	
@@ -222,10 +237,10 @@ ShapeP.prototype = {
 	fill : function(ctx){
 		ctx.beginPath();
 		
-		ctx.moveTo( Math.sin(this.rads[0])*4, -Math.cos(this.rads[0])*4);
+		ctx.moveTo( Math.sin( this.rads[0]) *2.5 *SCALE.min, -Math.cos( this.rads[0]) *2.5 *SCALE.min);
 
 		for(var i=1; i<this.rads.length; i++)
-			ctx.lineTo( Math.sin(this.rads[i])*4, -Math.cos(this.rads[i])*4);
+			ctx.lineTo( Math.sin( this.rads[i]) *2.5 *SCALE.min, -Math.cos( this.rads[i]) *2.5 *SCALE.min);
 
 		ctx.closePath();
 

@@ -17,15 +17,9 @@ Controler.prototype = {
 	draw : function(){
 		CTX.fillStyle = '#888';
 		
-		var save = CTX.globalAlpha;
-		CTX.globalAlpha = .25;
-		
 		for(var i=0; i<this.data.length; i++){
 			CTX.fillRect( -200 +i *5,  200,  5, -this.data[i]/ 256 *200 -5);
 		}
-		
-		CTX.globalAlpha = .25;
-		CTX.globalAlpha = save;
 	},
 	
 	updateEntities : function( entities){

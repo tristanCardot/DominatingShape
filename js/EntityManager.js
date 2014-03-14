@@ -11,7 +11,7 @@ EntityManager.prototype = {
 		this.list = [];
 		
 		this.list.push( new Entity(
-				SIZE-40,
+				SIZE* .9,
 				0,
 				0,
 				SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
@@ -26,7 +26,7 @@ EntityManager.prototype = {
 		
 		for(var i=0, end= 2+ Math.floor(Math.random()*2); i<end; i++)
 		this.list.push( new Entity(
-			SIZE -17.5,
+			SIZE *.9,
 			rad +i *( PI2 /6),
 			1 /90,
 			SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
@@ -147,11 +147,12 @@ EntityManager.prototype = {
 
 	remove : function(entity){
 		var particle = new Particle( entity.shape, entity.color, 800 ),
-			x = Math.cos( entity.angle ) *entity.range,
-			y = Math.sin( entity.angle ) *entity.range;
+			x = Math.cos( entity.angle ) *entity.range *SCALE.x,
+			y = Math.sin( entity.angle ) *entity.range *SCALE.y;
 		
+		var off = Math.random()*.5+2;
 		for(var i=0; i<20; i++)
-			particle.add( x, y , 0.008*i+0.14 );
+			particle.add( x, y , 0.004 *SCALE.min *i +0.05 *SCALE.min, i*off);
 		
 		this.particles.push( particle );
 		

@@ -31,7 +31,7 @@ Entity.prototype = {
 		switch(this.phase){
 			case Entity.PHASE.SPAWN:
 					this.time += delta;
-					this.scale = this.time /42.86 +0.01;
+					this.scale = this.time /75 +0.01;
 					this.rotation += delta /150;
 					
 					if(this.time>750){
@@ -44,9 +44,8 @@ Entity.prototype = {
 					this.range -= this.speed *delta;
 					this.time += delta;
 					this.rotation += delta *this.speed /( Math.PI *2);
-					//this.angle += this.speed /delta /120;
 					
-					this.scale = 17.5 +Math.sin( this.time /75);
+					this.scale = 10 +Math.sin( this.time /75);
 				break;
 				
 			case Entity.PHASE.DEAD:
@@ -57,12 +56,14 @@ Entity.prototype = {
 	
 	/**Dessine l'entitée. */
 	draw : function(){
+		var rangeX = this.range *Math.cos( this.angle) *SCALE.x;
+		var rangeY = this.range *Math.sin( this.angle) *SCALE.y;
+		
 		CTX.fillStyle = this.fillStyle;
 		CTX.strokeStyle = this.strokeStyle;
 
-		CTX.rotate( this.angle );
-		CTX.translate( this.range, 0);
-		CTX.scale(this.scale, this.scale);
+		CTX.translate( rangeX, rangeY);
+		CTX.scale( this.scale *SCALE.min, this.scale *SCALE.min);
 
 		CTX.rotate( this.rotation );
 		
@@ -70,9 +71,8 @@ Entity.prototype = {
 		
 		CTX.rotate( -this.rotation );
 		
-		CTX.scale(1/this.scale, 1/this.scale);
-		CTX.translate( -this.range, 0);
-		CTX.rotate( -this.angle );
+		CTX.scale( 1/( this.scale *SCALE.min), 1 /( this.scale *SCALE.min));
+		CTX.translate( -rangeX, -rangeY);
 	}
 };
 

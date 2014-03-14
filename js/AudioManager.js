@@ -36,8 +36,6 @@ var AM =(function(){
 				finish : callback || function(){}
 			};
 
-			window.eventAM = event;
-
 			for( key in list)
 				this.load( key, list[key], event, this);
 		};
@@ -132,7 +130,6 @@ var AM =(function(){
 					source.start(0);
 				}
 
-				window.source = source;
 				this.played = source;
 				this.state = this.PLAY;
 			},

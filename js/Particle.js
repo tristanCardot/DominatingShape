@@ -1,7 +1,7 @@
 function Particle(shape, color, lifeTime){
 	this.ctx = document.createElement('canvas').getContext('2d');
-	this.ctx.canvas.height = 10;
-	this.ctx.canvas.width = 10;
+	this.ctx.canvas.height = 5 *SCALE.min +1;
+	this.ctx.canvas.width = 5 *SCALE.min +1;
 	
 	this.list = [];
 	
@@ -13,22 +13,27 @@ function Particle(shape, color, lifeTime){
 }
 
 Particle.prototype = {
+	updateScale : function(){
+		this.ctx.canvas.height = 5 *SCALE.min +1;
+		this.ctx.canvas.width = 5 *SCALE.min +1;
+	},
+		
 	updateCtx : function(){
 		this.ctx.fillStyle = this.color.evaluate(.5);
 
-		this.ctx.clearRect( 0, 0, 10, 10 );
-		this.ctx.translate(5,5);
+		this.ctx.clearRect( 0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+		this.ctx.translate( this.ctx.canvas.width/2, this.ctx.canvas.height/2);
 		
 		this.shape.fill( this.ctx );
 		
-		this.ctx.translate(-5, -5);
+		this.ctx.translate(-this.ctx.canvas.width/2, -this.ctx.canvas.height/2);
 	},
 
 	add : function( x, y, speed, vec){
 		this.list.push([
 		    x,
 		    y,
-		    speed || 0.04,
+		    speed || SCALE.min /50,
 		    vec || Math.random() *PI2,
 		    this.lifeTime
 		]);
