@@ -121,7 +121,7 @@ Game.prototype = {
 		
 		player.particle.updateScale();
 		
-		CTX.font = ( SCALE.min *20) +'px sans-serif';
+		CTX.font = ( ( SCALE.x + SCALE.y)*6) +'px Byte';
 		CTX.lineWidth = .2;
 		
 		if(!this.run){

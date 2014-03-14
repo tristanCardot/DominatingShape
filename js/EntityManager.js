@@ -150,9 +150,9 @@ EntityManager.prototype = {
 			x = Math.cos( entity.angle ) *entity.range *SCALE.x,
 			y = Math.sin( entity.angle ) *entity.range *SCALE.y;
 		
-		var off = Math.random()*.5+2;
+		var off = ( ( Math.random() *Math.PI) %( Math.PI /6) ) +Math.PI /2;
 		for(var i=0; i<20; i++)
-			particle.add( x, y , 0.004 *SCALE.min *i +0.05 *SCALE.min, i*off);
+			particle.add( x, y , 0.004 *SCALE.min *( i +1) +0.05 *SCALE.min, ( i +1) *off);
 		
 		this.particles.push( particle );
 		

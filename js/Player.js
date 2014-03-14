@@ -15,20 +15,14 @@ Player.prototype = {
 	/** Dessine le font.*/
 	drawBackground : function(){
 		var length = this.shape.rads.length -1;
+		var max;
 		
-		var min, max;
-		
-		if(CANVAS.height < CANVAS.width){
-			min = CANVAS.height;
-			max = CANVAS.width;
-			
-		}else{
-			min = CANVAS.width;
-			max = CANVAS.height;
-		}
-		
-		max = max /2 *( max /min);
-		
+		if(CANVAS.height < CANVAS.width)
+			max = CANVAS.width/1.33;
+
+		else
+			max = CANVAS.height/1.33;
+
 		CTX.rotate(this.shape.rotation);
 		CTX.globalAlpha = .55;
 		
@@ -98,26 +92,26 @@ Player.prototype = {
 		this.shape.draw();
 
 		CTX.fillStyle = this.color.evaluate(1);
-		CTX.fillText(this.score, -CANVAS.width /2, -CANVAS.height /2 + 20 *SCALE.min *.75);
+		CTX.fillText( this.score, -CANVAS.width /2.05, -CANVAS.height /2.05 +( SCALE.x +SCALE.y)*6 );
 	},
 	
 	/**Dessine la barre de progression. */
 	drawFromProgress : function(progress){
-		CTX.fillStyle = this.color.evaluate(.4);
-		CTX.strokeStyle = this.color.evaluate(progress);
+		CTX.fillStyle = this.color.evaluate( .4);
+		CTX.strokeStyle = this.color.evaluate( progress);
 
 		this.shape.draw();
 
 	},
 	
 	updateScore : function(){
-		if( this.combo === 0 )
+		if( this.combo === 0)
 			return;
 		
 		this.score += this.combo *this.combo;
 		this.combo = 0;
 		
-		this.morphing( em.getTarget() );
+		this.morphing( em.getTarget());
 	}
 };
 

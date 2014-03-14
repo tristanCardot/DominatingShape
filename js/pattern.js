@@ -1,0 +1,11 @@
+function Partern(){
+	
+	
+	
+	
+}
+
+Partern.prototype = {
+		
+		
+};
