@@ -207,8 +207,11 @@ function ShapeP(id){
 ShapeP.prototype = {
 	/**Dessine la forme du joueur.*/
 	draw : function(){
+		var scale = (this.scale +controler.scale) *SCALE.min;
+		
+		
 		CTX.rotate( this.rotation );
-		CTX.scale( this.scale *SCALE.min, this.scale *SCALE.min);
+		CTX.scale( scale, scale);
 		
 		CTX.beginPath();
 		
@@ -222,8 +225,8 @@ ShapeP.prototype = {
 		CTX.fill();
 		CTX.stroke();
 		
-		CTX.scale( 1 /( this.scale *SCALE.min), 1/( this.scale *SCALE.min));
-		CTX.rotate( -this.rotation );
+		CTX.scale( 1 /scale, 1/scale);
+		CTX.rotate( -this.rotation);
 	},
 	
 	/**Dessine une version minime de la forme joueur (particle).

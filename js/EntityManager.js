@@ -19,6 +19,7 @@ EntityManager.prototype = {
 				COLOR[ Math.floor( Math.random() *COLOR.length) ]
 			));
 		player.morphing( this.list[0]);
+		controler.rotationSpeed = Math.PI/2000;
 	},
 	
 	spawn : function(){
@@ -69,6 +70,7 @@ EntityManager.prototype = {
 			if(this.list[i].update(delta)){
 				while(this.list.length !== 0)
 					this.remove(this.list[i]);
+				
 				game.audioChan.stop();
 				game.openGui(GUI.MENU);
 				return;
@@ -109,7 +111,7 @@ EntityManager.prototype = {
 			rx = p1.x -c.x;
 			ry = p1.y -c.y;
 
-			if( Math.sqrt( rx *rx +ry *ry ) < s.scale){
+			if( Math.sqrt( rx *rx +ry *ry ) < s.scale *1.2){
 				result.push(s);
 				continue;
 			}
@@ -117,7 +119,7 @@ EntityManager.prototype = {
 			rx = p2.x -c.x;
 			ry = p2.y -c.y;
 
-			if( Math.sqrt( rx *rx +ry *ry ) < s.scale){
+			if( Math.sqrt( rx *rx +ry *ry ) < s.scale *1.2){
 				result.push(s);
 				continue;
 			}

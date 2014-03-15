@@ -1,33 +1,33 @@
 function Controler(){
-	this.rotationSpeed = 0;
-	this.speed = 0.01;
-	
+	this.reset();
 	this.data = [];
 }
 
 Controler.prototype = {
-	update : function(delta){
-		var d = this.data = getAudioData();
-
-		this.rotationSpeed = ( ( ( d[0] %64) +( d[1] %128) -( d[3] %256)) /( 256) ) *.05;
-		this.speed = ( ( ( d[5] %64) +( d[9] %64) +( d[15] %64) ) /( 64 *3) ) *.05;
+	reset : function(){
+		this.angleSpeed = 0;
+		this.rotationSpeed = 0;
+		this.scale = 0;
+		this.angle = 0;
+	},
 		
+	update : function(delta){
+		var d = getAudioData();
+		
+		this.angleSpeed = this.angleSpeed /2 +( ( ( d[0] %64) +( d[1] %128) -( d[3] %256)) /( 256) ) *.0005;
+		this.rotationSpeed = this.rotationSpeed /2 + ( ( ( d[2] %64) +( d[4] %128) -( d[8] %256)) /( 256) ) *.005;
+		this.scale = ( ( ( d[5] -this.data[5]) +( d[7] -this.data[7]) +( d[9] -this.data[9]) ) /64);
+		
+		this.angle += this.rotationSpeed *delta;
+		
+		this.data = d;
 	},
 
 	draw : function(){
 		CTX.fillStyle = '#888';
 		
-		for(var i=0; i<this.data.length; i++){
+		for(var i=0; i<this.data.length; i++)
 			CTX.fillRect( -200 +i *5,  200,  5, -this.data[i]/ 256 *200 -5);
-		}
-	},
-	
-	updateEntities : function( entities){
-		for(var i=0; i<entities.length; i++){
-			entities[i].angle += this.rotationSpeed;
-			entities[i].speed = this.speed;
-		}
-		
 	}
 };
 

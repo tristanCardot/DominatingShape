@@ -216,15 +216,16 @@ function buildGuiPlay( game){
 
 			for( key in l )
 				window.removeEventListener( key, l[key], false);
+			
+			controler.reset();
 		},
 		
 		//UPDATE
 		function(delta){
-			controler.update();
+			controler.update(delta);
 			em.updatePattern(delta);
 
 			player.update( delta);
-			controler.updateEntities( em.list);
 			em.update( delta);
 		},
 		

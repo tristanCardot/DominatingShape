@@ -10,6 +10,7 @@ function Game(){
 	this.active = 0;
 	this.lastUpdate = 0;
 	this.difficulty = 0;
+	this.rotate = 0;
 	
 	this.guiList = [];
 	

@@ -28,9 +28,11 @@ Entity.prototype = {
 	 * @param {Number} delta
 	 */
 	update : function(delta){
+		this.angle += controler.angleSpeed *delta;
+		this.time += delta;
+		
 		switch(this.phase){
 			case Entity.PHASE.SPAWN:
-					this.time += delta;
 					this.scale = this.time /75 +0.01;
 					this.rotation += delta /150;
 					
@@ -42,10 +44,9 @@ Entity.prototype = {
 				
 			case Entity.PHASE.ALIVE:
 					this.range -= this.speed *delta;
-					this.time += delta;
-					this.rotation += delta *this.speed /( Math.PI *2);
+					this.rotation += delta *controler.rotationSpeed;
 					
-					this.scale = 10 +Math.sin( this.time /75);
+					this.scale = 10 +controler.scale;
 				break;
 				
 			case Entity.PHASE.DEAD:
