@@ -24,7 +24,7 @@ Player.prototype = {
 			max = CANVAS.height/1.33;
 
 		CTX.rotate(this.shape.rotation);
-		CTX.globalAlpha = .55;
+		CTX.globalAlpha = .60;
 		
 		for(var i=0, rad, toRad; i<length; i++){
 			rad = this.shape.rads[i] -0.005;

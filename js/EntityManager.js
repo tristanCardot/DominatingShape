@@ -4,6 +4,7 @@ function EntityManager(){
 	this.currentLevel = 0;
 	this.lastOffset = 0;
 	this.audioChan = null;
+	this.currentPattern = new Pattern( PATTERN[0]);
 }
 
 EntityManager.prototype = {
@@ -17,12 +18,12 @@ EntityManager.prototype = {
 				SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
 				COLOR[ Math.floor( Math.random() *COLOR.length) ]
 			));
-		player.morphing(this.list[0]);
+		player.morphing( this.list[0]);
 	},
 	
 	spawn : function(){
 		var needMorph = this.list.length === 0;
-		var rad = (Math.floor(Math.random()*6)*Math.PI/3 + player.shape.rotation) % PI2;
+		var rad = ( Math.floor( Math.random() *6) *Math.PI/3 +player.shape.rotation) %PI2;
 		
 		for(var i=0, end= 2+ Math.floor(Math.random()*2); i<end; i++)
 		this.list.push( new Entity(
@@ -34,12 +35,20 @@ EntityManager.prototype = {
 		));
 
 		if(needMorph)
-			player.morphing(this.list[0]);
+			player.morphing( this.list[0]);
 	},
 	
-	pushEntity : function(entity){
+	pushEntity : function( entity){
+		this.list.push( entity);
 		
-		
+		if(this.list.length === 1)
+			player.morphing( this.list[0]);
+	},
+	
+	updatePattern : function(delta){
+		var result = this.currentPattern.update(delta);
+		if(result !== 1)
+			this.currentPattern = new Pattern(PATTERN[0], result);
 	},
 
 	update : function(delta){

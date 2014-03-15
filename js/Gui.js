@@ -220,14 +220,8 @@ function buildGuiPlay( game){
 		
 		//UPDATE
 		function(delta){
-			
 			controler.update();
-			if( count <= 0 ){
-				count = 200 +Math.floor( Math.random() *20);
-				em.spawn();
-
-			}else
-				count--;
+			em.updatePattern(delta);
 
 			player.update( delta);
 			controler.updateEntities( em.list);

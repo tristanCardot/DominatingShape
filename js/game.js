@@ -1,4 +1,4 @@
-var SIZE = 100,
+var SIZE = 110,
 PI2 = Math.PI *2,
 SCALE = {x:0, y:0, min:0, z:2};
 
@@ -108,7 +108,7 @@ Game.prototype = {
 	},
 	
 	resize : function(){
-		CTX.translate(-CANVAS.width/2, -CANVAS.height/2);
+		CTX.translate( -CANVAS.width /2, -CANVAS.height /2);
 
 		SCALE.x = window.innerWidth /( SIZE *2 *SCALE.z);
 		SCALE.y = window.innerHeight /( SIZE *2 *SCALE.z);
@@ -121,7 +121,7 @@ Game.prototype = {
 		
 		player.particle.updateScale();
 		
-		CTX.font = ( ( SCALE.x + SCALE.y)*6) +'px Byte';
+		CTX.font = ( ( SCALE.x +SCALE.y) *6) +'px Byte';
 		CTX.lineWidth = .2;
 		
 		if(!this.run){
