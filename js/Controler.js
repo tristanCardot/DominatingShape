@@ -14,12 +14,11 @@ Controler.prototype = {
 	update : function(delta){
 		var d = getAudioData();
 		
-		this.angleSpeed = this.angleSpeed /2 +( ( ( d[0] %64) +( d[1] %128) -( d[3] %256)) /( 256) ) *.0005;
-		this.rotationSpeed = this.rotationSpeed /2 + ( ( ( d[2] %64) +( d[4] %128) -( d[8] %256)) /( 256) ) *.005;
+		this.angleSpeed = this.angleSpeed /2 +( ( ( d[2] %64) +( d[3] %128) -( d[6] %256)) /( 256) ) *.0005 *game.speed;
+		this.rotationSpeed = this.rotationSpeed /2 + ( ( ( d[2] %64) +( d[4] %128) -( d[8] %256)) /( 256) ) *.005 *game.speed;
 		this.scale = ( ( ( d[5] -this.data[5]) +( d[7] -this.data[7]) +( d[9] -this.data[9]) ) /64);
 		
-		this.angle += this.rotationSpeed *delta;
-		
+		this.angle += this.angleSpeed *delta;
 		this.data = d;
 	},
 
@@ -32,7 +31,7 @@ Controler.prototype = {
 };
 
 function getAudioData(){
-	var freqByteData = new Uint8Array(AM.channel.inspiration.analyser.frequencyBinCount);
-	AM.channel.inspiration.analyser.getByteFrequencyData(freqByteData);
+	var freqByteData = new Uint8Array( game.audio.music.analyser.frequencyBinCount);
+	game.audio.music.analyser.getByteFrequencyData( freqByteData);
 	return freqByteData;
 };

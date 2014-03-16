@@ -3,68 +3,108 @@ var AM =(function(){
 	if( !Object.defineProperties || !XMLHttpRequest)
 		return;
 
-		function AudioManager(){
-			this.ctx = Ctx && new Ctx() || null;
-			this.channel = {};
-		}
+	function AudioManager(){
+		this.ctx = Ctx && new Ctx() || null;
+		this.channel = {};
+	}
 
-		AudioManager.prototype.loadList = function( list, callback, onprogress){
-			var event = {
-				total : 0,
-				loaded : 0,
-				failed : 0,
-				files : [],
-				onprogress : onprogress,
+	AudioManager.prototype.loadList = function( list, callback, onprogress){
+		var event = {
+			total : 0,
+			loaded : 0,
+			failed : 0,
+			files : [],
+			onprogress : onprogress,
 
-				onload : function( self, e){
-					this.loaded++;
-					this.total++;
+			onload : function( self, e){
+				this.loaded++;
+				this.total++;
 
-					this.onprogress( self, e, true);
+				this.onprogress( self, e);
 
-					if( this.total === this.files.length)
-						this.finish();
-				},
+				if( this.total === this.files.length)
+					this.finish();
+			},
 
-				onerror : function(){
-					this.failed++;
-					this.total++;
-					if( this.total === this.files.length)
-						this.finish();
-				},
+			onerror : function(){
+				this.failed++;
+				this.total++;
+				
+				if( this.total === this.files.length)
+					this.finish();
+			},
 
-				finish : callback || function(){}
-			};
-
-			for( key in list)
-				this.load( key, list[key], event, this);
+			finish : callback || function(){}
 		};
 
+		for( key in list)
+			this.load( key, list[key], event, this);
+	};
 
 	AudioManager.prototype.load = function( name, url, event, am){
+		var data = localStorage.getItem(name +'.data');
+		
+		if(data){
+			var buffer = (function(str) {
+ 			  	var buf = new ArrayBuffer(str.length*2);
+ 			  	var bufView = new Uint8Array(buf);
+ 			  	
+ 			  	for (var i=0, strLen=str.length; i<strLen; i++)
+ 			  		bufView[i] = str.charCodeAt(i);
+ 			  	
+ 			  	return buf;
+ 			})(data);
+
+			am.ctx.decodeAudioData( buffer, function( buffer){
+				am.channel[name] = new AudioChannel( am, buffer);
+				event.onload( {total: buffer.byteLength}, {type: 'load'});
+			},
+			function(){
+				event.onerror();
+			});
+
+			var file = {loaded: data.length, total: data.length};
+			event.files.push( file);
+			event.onprogress( file, file);
+			return;
+			
+		}else{
 			var request = new XMLHttpRequest();
 			request.open( 'GET', url, true);
 			request.responseType = 'blob';
 			event.files.push( request);
-
+	
 			request.onload = function( e){
 				am.onloadChannel( this, e, event, am, name);
 			};
-
+	
 			request.onprogress = function( e, end){
 				event.onprogress( this, e, end);
 			};
-
+	
 			request.onerror = event.onerror;
 			request.send();
-		};
+		}
+	};
 
-	if(Ctx){
+	if(Ctx){		
 		AudioManager.prototype.onloadChannel = function( request, e, event, am, name){
 			var reader = new FileReader();
 
-	 		reader.onload = function( readEvent){
-				am.ctx.decodeAudioData( readEvent.target.result, function( buffer){
+	 		reader.onload = function( readEvent){	 	
+	 			localStorage.setItem(name +'.data', readEvent.target.result);
+	 			
+	 			var buffer = (function(str) {
+	 			  	var buf = new ArrayBuffer(str.length*2);
+	 			  	var bufView = new Uint8Array(buf);
+
+	 			  	for (var i=0, strLen=str.length; i<strLen; i++)
+	 			  		bufView[i] = str.charCodeAt(i);
+
+	 			  	return buf;
+	 			})(readEvent.target.result);
+	 			
+				am.ctx.decodeAudioData( buffer, function( buffer){
 					am.channel[name] = new AudioChannel( am, buffer);
 					event.onload( request, e);
 				},
@@ -73,7 +113,7 @@ var AM =(function(){
 				});
             };
 
-			reader.readAsArrayBuffer(request.response);
+			reader.readAsBinaryString( request.response);
 		};
 
 		function AudioChannel( am, buffer){

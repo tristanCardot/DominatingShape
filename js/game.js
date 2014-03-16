@@ -9,16 +9,56 @@ function Game(){
 	
 	this.active = 0;
 	this.lastUpdate = 0;
-	this.difficulty = 0;
+	this.speed = 1; 
 	this.rotate = 0;
 	
 	this.guiList = [];
 	
 	this.activeGui = undefined;
 	this.activeGuiId = GUI.NONE;
+	
+	this.initWithStat();
 }
 
 Game.prototype = {
+	initWithStat : function(){
+		if( !localStorage){
+			window.localStorage = {
+				getItem : function( item){
+					item += '=';
+					var ca = document.cookie.split(';');
+					
+					for(var i=0; i < ca.length; i++){
+						var c = ca[i].trim();
+						
+						if ( c.indexOf(item) === 0)
+							return c.substring( item.length, c.length);
+					}
+					
+					return null;
+				},
+				
+				setItem : function( item, value){
+					if(!value || !value.length || value.length > 32)
+						return;
+					
+					var d = new Date();
+					d.setTime( d.getTime() +( 30 *24 *60 *60 *1000) );
+					var expires = "expires="+d.toGMTString();
+					
+					document.cookie = cname + "=" + cvalue + "; " + expires;
+				}
+			};
+		}
+
+		this.difficulty = parseInt( localStorage.getItem('difficulty') ) || (function(){
+			localStorage.setItem('difficulty', '0');
+			return 0;
+		})();
+		
+		this.audio = {};
+	},
+
 	onload : function(){
 		this.guiList = buildGui(this);
 
@@ -32,8 +72,8 @@ Game.prototype = {
 		
 
 		this.guiList[GUI.LOADER].loadList({
-			inspiration : 'Inspiration',
-			biup : 'biup'
+			music : 'Inspiration',
+			fx : 'biup'
 		});
 		
 		this.openGui(GUI.LOADER);
@@ -61,7 +101,7 @@ Game.prototype = {
 		if(this.run)
 			this.drawPause();
 		
-		this.audioChan.pause();
+		this.audio.music.pause();
 		this.run = false;
 	},
 	
@@ -87,25 +127,28 @@ Game.prototype = {
 	/**Ouvre le gui [id].
 	 * @param {Number} id
 	 */
-	openGui : function(id){
-		if(this.activeGui !== undefined)
-			this.activeGui.close(id);
+	openGui : function( id){
+		if( this.activeGui !== undefined)
+			this.activeGui.close( id);
 		
 		this.activeGui = this.guiList[id];
 		
-		if(this.activeGui !== undefined){
-			this.activeGui.open(this.activeGuiId);
+		if( this.activeGui !== undefined){
+			this.activeGui.open( this.activeGuiId);
 			this.activeGuiId = id;
 			
 		}else
 			this.activeGuiId = GUI.NONE;
 	},
 	
-	setAudioChan : function(audio){
-		audio.loop = true;
-		audio.volume = .2;
-		
-		this.audioChan = audio;
+	setAudioChan : function( name, audio){
+		audio.loop = name === 'music';
+		audio.volume = 	parseInt( localStorage.getItem( name +'.volume') ) || ( function(){
+			localStorage.setItem( name +'.volume', '.5');
+			return .5;
+		})();
+
+		this.audio[name] = audio;
 	},
 	
 	resize : function(){
@@ -118,7 +161,7 @@ Game.prototype = {
 		CANVAS.height = window.innerHeight/SCALE.z;
 		CANVAS.width = window.innerWidth/SCALE.z;
 
-		CTX.translate(CANVAS.width/2, CANVAS.height/2);
+		CTX.translate( CANVAS.width /2, CANVAS.height /2);
 		
 		player.particle.updateScale();
 		
@@ -134,22 +177,15 @@ Game.prototype = {
 	drawPause : function(){
 		CTX.globalAlpha = .5;
 		CTX.fillStyle = '#000';
-		CTX.fillRect(-SIZE, -SIZE, SIZE*2, SIZE*2);
+		CTX.fillRect( -SIZE, -SIZE, SIZE *2, SIZE *2);
 
 		CTX.fillStyle = '#FFF';
-		CTX.fillRect(-20, -25, 15, 50);
-		CTX.fillRect(5, -25, 15, 50);
+		CTX.fillRect( -20, -25, 15, 50);
+		CTX.fillRect( 5, -25, 15, 50);
 
 		CTX.globalAlpha = 1;
 	}
 };
-
-var count = 5;
-
-function log(txt){
-	document.getElementById('log').innerHTML += txt+'|';
-}
-
 
 
 

@@ -19,15 +19,14 @@ window.GUI = {
 	OPTIONS : 3
 };
 
-function buildGui( game){	
-	return [ 
+function buildGui( game){
+	return [
 		buildGuiLoader( game),
 		buildGuiMenu( game),
 		buildGuiPlay( game),
 		buildGuiOptions( game)
 	];
 }
-
 
 function buildGuiLoader( game){
 	var gui = new Gui(
@@ -37,9 +36,9 @@ function buildGuiLoader( game){
 			this.updateTime = 0;
 			this.targetProgress = 0;
 			this.progress = 0;
-	
+
 			var self = this;
-			
+
 			window.controler = new Controler();
 			
 			if(this.list == null)
@@ -49,14 +48,13 @@ function buildGuiLoader( game){
 				this.list,
 	
 				function( e){
-	
-					game.setAudioChan( AM.channel.inspiration);
-					em.setAudioChan( AM.channel.biup);
+					game.setAudioChan('music', AM.channel.music);
+					game.setAudioChan('fx', AM.channel.fx);
 					
 					game.openGui(GUI.MENU);
 				},
 	
-				function( request, e, end){
+				function( request, e){
 					if( e.type === 'load'){
 						request.loaded = request.total *1.05;
 	
@@ -102,7 +100,7 @@ function buildGuiLoader( game){
 		this.list = {};
 		var ex = '.ogg';
 
-		if(document.createElement('audio').canPlayType('audio/mp3') !== "")
+		if(document.createElement('audio').canPlayType('audio/ogg') === "")
 			ex = '.mp3';
 		
 		for(key in data)
@@ -159,7 +157,7 @@ function buildGuiMenu( game){
 			player.update(delta);
 			em.update(delta);
 
-			if(em.list.length === 0 && game.audioChan.state === game.audioChan.PLAY)
+			if(em.list.length === 0 && game.audio.music.state === game.audio.music.PLAY)
 				game.openGui(GUI.PLAY);
 		},
 		//RENDER
@@ -175,7 +173,7 @@ function buildGuiMenu( game){
 		player.cursor.up( e, this);
 
 		if(em.list.length === 0)
-			game.audioChan.play();
+			game.audio.music.play();
 	};
 	return gui; 
 }
@@ -248,7 +246,7 @@ function buildGuiPlay( game){
 		window.removeEventListener( 'touchend', gui.resume, false);
 		
 		game.start();
-		game.audioChan.play();
+		game.audio.music.play();
 	};
 
 	gui.bindResume = function(){
@@ -265,20 +263,81 @@ function buildGuiPlay( game){
 }
 
 function buildGuiOptions( game){
-	return new Gui(
+	var gui = new Gui(
 		//OPEN
 		function(){
+			this.input[0].data = game.audio.music.volume;
+			this.input[1].data = game.audio.fx.volume;
 		},
 		//CLOSE
 		function(){
 		},
 		//UPDATE
-		function(){
+		function(delta){;
+			player.update(delta);
+			
+			for(var i=0; i < this.input.length; i++)
+				this.input[i].update();
 		},
 		//RENDER
 		function(){
+			player.drawBackground();
+			player.draw();
+			
+			CTX.globalAlpha = .25;
+			CTX.fillStyle = '#FFF';
+			
+			for(var i=0; i < this.input.length; i++)
+				this.input[i].render();
+			
+			CTX.globalAlpha = 1;
 		}
 	);
+	
+	 function buttonRender(){
+		CTX.translate( this.x *SCALE.min, this.y *SCALE.min);
+		CTX.fillRect( 0, 0, this.width *SCALE.min, this.height *SCALE.min);
+		CTX.fillRect( 0, 0, this.width *this.data *SCALE.min, this.height *SCALE.min);
+		CTX.fillText( this.type, -20 *SCALE.min, 15 *SCALE.min, 18 *SCALE.min);
+		
+		CTX.translate( -this.x *SCALE.min, -this.y *SCALE.min);
+	};
+	
+	gui.input =[{
+		type: 'Fx',
+		data: 0,
+		x: -60,
+		y: -60,
+		height: 15,
+		width: 120,
+		update: function(){
+		},
+		render: buttonRender
+	},{
+		type: 'Msc',
+		data: 0,
+		x: -60,
+		y: -30,
+		height: 15,
+		width: 120,
+		update: function(){
+			
+		},
+		render: buttonRender
+	},{
+		type: 'LvL',
+		data: 0,
+		x: -60,
+		y: 30,
+		height: 15,
+		width: 120,
+		update: function(){
+			
+		},
+		render: buttonRender
+	}];
+
+	return gui;
 }
 
 

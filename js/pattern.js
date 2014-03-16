@@ -3,7 +3,7 @@ function Pattern(data, offset){
 	
 	this.generate = this.getGenerate(data[0]);
 	this.currentIndex = 1;
-	this.delay = data[0] +(offset || 0);
+	this.delay = data[1][0] +(offset || 0);
 }
 
 Pattern.prototype = {
@@ -17,7 +17,7 @@ Pattern.prototype = {
 			if(this.currentIndex >= this.data.length)
 				return this.delay;
 			
-			this.delay += this.data[ this.currentIndex][0];
+			this.delay += this.data[ this.currentIndex][0] /game.speed;
 		}
 		
 		return 1;
@@ -37,7 +37,7 @@ Pattern.prototype = {
 	spawn : function( i){
 		var p = this.generate[ i[1] ];
 		
-		var entity = new Entity( 100, i[2] +controler.angle,  i[3]/100, p[0], p[1]);
+		var entity = new Entity( 100, i[2] +controler.angle,  i[3] /150 *game.speed, p[0], p[1]);
 		entity.time -= this.delay;
 		
 		em.pushEntity( entity);
@@ -65,22 +65,82 @@ var RAD =[
 
 	/*delay(ms) / parterneId / angle(rad) / speed(coef)*/
 PATTERN = [
-	[ 6,//sphere
-		[2500, 0, RAD[0], 1.1],
-		[250, 0, RAD[1], 1.2],
-		[250, 0, RAD[2], 1.4],
-		[250, 3, RAD[3], 1.8],
+       	[ 6,//sphere
+  		[2500, 0, RAD[0], 1],
+  		[500, 0, RAD[1], 1],
+  		[500, 1, RAD[2], 1],
+  		[500, 1, RAD[3], 1],
+  		
+  		[2500, 2, RAD[5], 1.4],
+  		[500, 2, RAD[6], 1.4],
+  		[500, 3, RAD[7], 1.4],
+  		[500, 3, RAD[8], 1.4],
+  		
+  		[2500, 4, RAD[10], 1.8],
+  		[500, 4, RAD[11], 1.8],
+  		[500, 5, RAD[12], 1.8],
+  		[500, 5, RAD[13], 1.8]
+  	],
+  	
+	[ 6,//star
+		[3000, 0, RAD[0], 1],
+		[0, 1, RAD[4], 1],
+		[0, 1, RAD[8], 1],
+		[250, 2, RAD[12], 1],
 		
-		[2500, 1, RAD[5], 1.1],
-		[250, 1, RAD[6], 1.2],
-		[250, 1, RAD[7], 1.4],
-		[250, 3, RAD[8], 1.8],
+		[3000, 2, RAD[2], 1],
+		[0, 2, RAD[6], 1],
+		[0, 3, RAD[10], 1],
+		[250, 3, RAD[14], 1],
 		
-		[2500, 2, RAD[10], 1.1],
-		[250, 2, RAD[11], 1.2],
-		[250, 2, RAD[12], 1.4],
-		[250, 3, RAD[13], 1.8]
+		[3000, 3, RAD[1], 1],
+		[0, 4, RAD[5], 1],
+		[0, 4, RAD[9], 1],
+		[250, 5, RAD[13], 1]
+	],
+	
+	[ 5,//quad
+		[1250, 0, RAD[13], .8],
+		[750, 1, RAD[14], .8],
+		[750, 1, RAD[15], .8],
+
+		[1250, 1, RAD[9], .9],
+		[750, 2, RAD[10], .9],
+		[750, 2, RAD[11], .9],
+
+		[1250, 2, RAD[5], 1],
+		[750, 3, RAD[6], 1],
+		[750, 3, RAD[7], 1],
+
+		[1100, 3, RAD[1], 1.1],
+		[1100, 4, RAD[2], 1.1],
+		[1100, 4, RAD[3], 1.1]
+	],
+
+	[ 5,//rand
+		[750, 0, RAD[0], .8],
+		[1100, 1, RAD[3], .8],
+		[1100, 1, RAD[6], .8],
+		[1100, 2, RAD[9], .8],
+		[1100, 2, RAD[12], .8],
+		[750, 2, RAD[15], .8],
+		
+		[1100, 3, RAD[2], .9],
+		[1100, 3, RAD[5], .9],
+		[1100, 4, RAD[8], .9],
+		[1100, 4, RAD[11], .9],
+		
+		[750, 2, RAD[14], 1],
+		[1100, 2, RAD[1], 1],
+		[1100, 2, RAD[4], 1],
+		[1100, 1, RAD[7], 1],
+		[1100, 1, RAD[10], 1],
+		[750, 0, RAD[13], 1]
 	]
+	
+	
+	
+	
 ];   	
      
 
