@@ -24,9 +24,12 @@ Controler.prototype = {
 
 	draw : function(){
 		CTX.fillStyle = '#888';
+		CTX.globalAlpha = .2;
 		
 		for(var i=0; i<this.data.length; i++)
-			CTX.fillRect( -200 +i *5,  200,  5, -this.data[i]/ 256 *200 -5);
+			CTX.fillRect( -110 *SCALE.x +i *2 *SCALE.x,  110 *SCALE.y,  SCALE.x *2, ( -this.data[i] /256 *100 -5) *SCALE.y);
+		
+		CTX.globalAlpha = 1;
 	}
 };
 

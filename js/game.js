@@ -21,6 +21,7 @@ function Game(){
 }
 
 Game.prototype = {
+	/** Permet de charger les données sauvegardés, ou de les créer.*/
 	initWithStat : function(){
 		if( !localStorage){
 			window.localStorage = {
@@ -34,18 +35,18 @@ Game.prototype = {
 						if ( c.indexOf(item) === 0)
 							return c.substring( item.length, c.length);
 					}
-					
+
 					return null;
 				},
-				
+
 				setItem : function( item, value){
 					if(!value || !value.length || value.length > 32)
 						return;
-					
+
 					var d = new Date();
-					d.setTime( d.getTime() +( 30 *24 *60 *60 *1000) );
+					d.setTime( d.getTime() +( 15 *24 *60 *60 *1000) );
 					var expires = "expires="+d.toGMTString();
-					
+
 					document.cookie = cname + "=" + cvalue + "; " + expires;
 				}
 			};
@@ -55,8 +56,17 @@ Game.prototype = {
 			localStorage.setItem('difficulty', '0');
 			return 0;
 		})();
-		
+
 		this.audio = {};
+		this.score = [];
+		
+		for(var i=0; i<3; i++)
+  			this.score.push(
+  				parseInt( localStorage.getItem( 'score.' +i) ) || (function(){
+					localStorage.setItem( 'score.' +i, '0');
+					return 0;
+				})() 
+  			);
 	},
 
 	onload : function(){
@@ -70,7 +80,6 @@ Game.prototype = {
 			function(e){game.resize();},		
 			false);
 		
-
 		this.guiList[GUI.LOADER].loadList({
 			music : 'higeDrive',
 			fx : 'biup'
@@ -184,6 +193,13 @@ Game.prototype = {
 		CTX.fillRect( 5, -25, 15, 50);
 
 		CTX.globalAlpha = 1;
+	},
+	
+	updateBestScore : function(){
+		if(this.score[ this.difficulty] < player.score){
+			this.score[ this.difficulty] = player.score;
+			localStorage.setItem( 'score.' +this.difficulty, player.score.toString());
+		}
 	}
 };
 

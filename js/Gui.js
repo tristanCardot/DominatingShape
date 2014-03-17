@@ -138,10 +138,8 @@ function buildGuiMenu( game){
 		//OPEN
 		function( from){
 			var l = {
-					mousedown : player.cursor.eventDown,
 					mouseup : this.up,
 					mouseout : this.up,
-					touchstart : player.cursor.eventDown,
 					touchend : this.up,
 					touchcancel : this.up
 				};
@@ -168,8 +166,6 @@ function buildGuiMenu( game){
 		},
 		//CLOSE
 		function( to){
-			
-			
 			var l = {
 				'mouseup': this.up,
 				'mouseout': this.up,
@@ -182,14 +178,23 @@ function buildGuiMenu( game){
 		},
 		//UPDATE
 		function(delta){
+			this.tick += delta;
+			
+			if( this.tick > this.nextLaps){
+				this.nextLaps = Math.random() *500 +250;
+				this.tick = 0;
+				this.color.morphing( COLOR[ ~~(Math.random() *COLOR.length) ] );
+			}
+			
+			this.color.update(delta);
 			player.update(delta);
 			em.update(delta);
 
-			if(em.list.length < 2){
-				if(!em.list[0] || em.list[0].angle !== 0)
-					game.openGui(GUI.PLAY);
+			if( em.list.length < 2){
+				if( !em.list[0] || em.list[0].angle !== 0)
+					game.openGui( GUI.PLAY);
 				else
-					game.openGui(GUI.OPTIONS);
+					game.openGui( GUI.OPTIONS);
 			}
 		},
 		//RENDER
@@ -220,27 +225,27 @@ function buildGuiMenu( game){
 			
 			CTX.arc( 0, 0, 12, 0, Math.PI *2, false);
 			
-			CTX.moveTo(-6, -16);
-			CTX.lineTo(-6, -6);
+			CTX.moveTo( -6, -16);
+			CTX.lineTo( -6, -6);
 			
-			CTX.lineTo(-16, -6);
-			CTX.lineTo(-16, 6);
+			CTX.lineTo( -16, -6);
+			CTX.lineTo( -16, 6);
 
-			CTX.lineTo(-6, 6);
-			CTX.lineTo(-6, 16);
+			CTX.lineTo( -6, 6);
+			CTX.lineTo( -6, 16);
 
-			CTX.lineTo(6, 16);
-			CTX.lineTo(6, 6);
+			CTX.lineTo( 6, 16);
+			CTX.lineTo( 6, 6);
 			
-			CTX.lineTo(16, 6);
-			CTX.lineTo(16, -6);
+			CTX.lineTo( 16, 6);
+			CTX.lineTo( 16, -6);
 
-			CTX.lineTo(6, -6);
-			CTX.lineTo(6, -16);
+			CTX.lineTo( 6, -6);
+			CTX.lineTo( 6, -16);
 			
-			CTX.lineTo(-6, -16);
+			CTX.lineTo( -6, -16);
 			
-			CTX.moveTo(0, 0);
+			CTX.moveTo( 0, 0);
 
 			CTX.arc( 0, 0, 12, 0, Math.PI *2, false);
 			CTX.arc( 0, 0, 4, 0, Math.PI *2, true);
@@ -249,10 +254,39 @@ function buildGuiMenu( game){
 			CTX.fill();
 			
 			CTX.scale( 1 /SCALE.min, 1 /SCALE.min);
-			CTX.translate(80 *SCALE.x, 0);
+			CTX.translate( 80 *SCALE.x, 0);
+			
+			CTX.textAlign = 'center';
+			CTX.fillStyle = (function(){
+				switch( game.difficulty){
+					case 1: return '#FF0';
+					case 2: return '#F00';
+					default: return '#0F0';
+				};
+			})();
+			
+			CTX.fillText( 'BEST: '+ game.score[game.difficulty], 0, 85 *SCALE.y, 180 *SCALE.x);
+			
+			CTX.fillStyle = '#FFF';
+			
+			var font = CTX.font;
+			CTX.font = ( ( SCALE.min) *32) +'px Byte';
+			
+			CTX.fillText( 'SHAPE', -50 *SCALE.min, -75 *SCALE.y, 100 *SCALE.min);
+			
+			CTX.fillStyle = this.color.evaluate(1.0);
+			CTX.fillText( 'COLOR', 50 *SCALE.min, -60 *SCALE.y, 100 *SCALE.min);
+			
+			CTX.font = font;
+			
+			CTX.textAlign = 'start';
 		}
 	);
 
+	gui.tick = 0;
+	gui.nextLaps = Math.random() *500 +250;
+	gui.color = new ColorP(0);
+	
 	return gui; 
 }
 
@@ -261,10 +295,8 @@ function buildGuiPlay( game){
 		//OPEN
 		function( from){
 			var l = {
-					'mousedown': player.cursor.eventDown,
 					'mouseup': this.up,
 					'mouseout': this.up,
-					'touchstart' : player.cursor.eventDown,
 					'touchend' : this.up,
 					'touchcancel' : this.up,
 					
@@ -277,6 +309,7 @@ function buildGuiPlay( game){
 
 				em.reset();
 				controler.reset();
+				player.reset();
 				
 				game.audio.music.stop();
 				game.audio.music.play();
@@ -285,10 +318,8 @@ function buildGuiPlay( game){
 		//CLOSE
 		function( to){
 			var l = {
-				'mousedown': player.cursor.eventDown,
 				'mouseup': this.up,
 				'mouseout': this.up,
-				'touchstart' : player.cursor.eventDown,
 				'touchend' : this.up,
 				'touchcancel' : this.up,
 				
@@ -298,6 +329,8 @@ function buildGuiPlay( game){
 
 			for( key in l )
 				window.removeEventListener( key, l[key], false);
+			
+			game.updateBestScore();
 		},
 		
 		//UPDATE
@@ -321,12 +354,14 @@ function buildGuiPlay( game){
 			player.drawBackground();
 			em.draw();
 			player.draw();
+			player.drawScore();
+			
+			
 			controler.draw();
 		}
 	);
 	
 	gui.up = function(e){
-		player.cursor.up(e, this);
 		player.updateScore();
 	};
 

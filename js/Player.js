@@ -114,6 +114,12 @@ Player.prototype = {
 		this.combo = 0;
 		
 		this.morphing( em.getTarget());
+	},
+	
+	reset : function(){
+		this.score = 0;
+		this.combo = 0;
+		this.morphing( em.getTarget());
 	}
 };
 
