@@ -72,7 +72,7 @@ Game.prototype = {
 		
 
 		this.guiList[GUI.LOADER].loadList({
-			music : 'Inspiration',
+			music : 'love',
 			fx : 'biup'
 		});
 		
@@ -143,7 +143,7 @@ Game.prototype = {
 	
 	setAudioChan : function( name, audio){
 		audio.loop = name === 'music';
-		audio.volume = 	parseInt( localStorage.getItem( name +'.volume') ) || ( function(){
+		audio.volume = 	parseFloat( localStorage.getItem( name +'.volume') ) || ( function(){
 			localStorage.setItem( name +'.volume', '.5');
 			return .5;
 		})();
@@ -165,7 +165,7 @@ Game.prototype = {
 		
 		player.particle.updateScale();
 		
-		CTX.font = ( ( SCALE.x +SCALE.y) *6) +'px Byte';
+		CTX.font = ( ( SCALE.min) *16) +'px Byte';
 		CTX.lineWidth = .2;
 		
 		if(!this.run){

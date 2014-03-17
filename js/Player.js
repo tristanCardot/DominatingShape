@@ -91,8 +91,8 @@ Player.prototype = {
 		this.particle.draw();
 		this.shape.draw();
 
-		CTX.fillStyle = this.color.evaluate(1);
-		CTX.fillText( this.score, -CANVAS.width /2.05, -CANVAS.height /2.05 +( SCALE.x +SCALE.y)*6 );
+		CTX.fillStyle = CTX.strokeStyle;
+		CTX.fillText( this.score, -CANVAS.width /2 +SCALE.x, -CANVAS.height /2 +( SCALE.min) *16);
 	},
 	
 	/**Dessine la barre de progression. */
@@ -100,8 +100,8 @@ Player.prototype = {
 		CTX.fillStyle = this.color.evaluate( .4);
 		CTX.strokeStyle = this.color.evaluate( progress);
 
+		this.particle.draw();
 		this.shape.draw();
-
 	},
 	
 	updateScore : function(){

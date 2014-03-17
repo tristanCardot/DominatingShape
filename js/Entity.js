@@ -33,7 +33,7 @@ Entity.prototype = {
 		
 		switch(this.phase){
 			case Entity.PHASE.SPAWN:
-					this.scale = this.time /75 +0.01;
+					this.scale = ( this.time /750 +0.01) *( 10 +controler.scale);
 					this.rotation += delta /150;
 					
 					if(this.time>750){

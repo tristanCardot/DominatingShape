@@ -32,7 +32,7 @@ Cursor.prototype = {
 		this.lastX = this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x /SCALE.z;
 		this.lastY = this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y /SCALE.z;
 
-		this.press = Math.sqrt( this.x *this.x + this.y *this.y ) < 35;
+		this.press = true;
 	},
 	
 	/**Lors du relachement.

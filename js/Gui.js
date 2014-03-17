@@ -32,6 +32,20 @@ function buildGuiLoader( game){
 	var gui = new Gui(
 		//open
 		function(){
+			if( this.firstLoad){
+				this.firstLoad = false;
+				var l = {
+					'mousedown': player.cursor.eventDown,
+					'mouseup': player.cursor.eventUp,
+					'mouseout': player.cursor.eventUp,
+					'touchstart' : player.cursor.eventDown,
+					'touchend' : player.cursor.eventUp,
+					'touchcancel' : player.cursor.eventUp
+				};
+
+				for( key in l )
+					window.addEventListener( key, l[key], false);
+			}
 	
 			this.updateTime = 0;
 			this.targetProgress = 0;
@@ -77,13 +91,15 @@ function buildGuiLoader( game){
 		
 		//close
 		function(){
-			
 		},
 		
 		//update
 		function( delta){
 			this.updateTime += delta;
 			player.shape.rotation += delta/1100;
+
+			player.particle.updateCtx();
+			player.particle.update(delta);
 			
 			if(this.updateTime > 2500)
 				this.updateTime = 2500;
@@ -106,6 +122,8 @@ function buildGuiLoader( game){
 		for(key in data)
 			this.list[key] = 'audio/'+ data[key] +ex;
 	};
+	
+	gui.firstLoad = true;
 	
 	gui.loadLink = function(key, url){
 		this.list = {};
@@ -136,15 +154,25 @@ function buildGuiMenu( game){
 			for(key in l)
 				window.addEventListener( key, l[key], false);
 
+			controler.reset();
+			controler.scale = 10;
+			controler.rotationSpeed = 0.001;
+			
 			em.reset();
+			
+			var shape = SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
+				color = COLOR[ Math.floor( Math.random() *COLOR.length) ];
+
+			em.pushEntity( new Entity( 80, 0, 0, shape, color) );
+			em.pushEntity( new Entity( 80, Math.PI, 0, shape, color) );
 		},
 		//CLOSE
 		function( to){
+			
+			
 			var l = {
-				'mousedown': this.down,
 				'mouseup': this.up,
 				'mouseout': this.up,
-				'touchstart' : this.down,
 				'touchend' : this.up,
 				'touchcancel' : this.up,
 			};
@@ -157,8 +185,12 @@ function buildGuiMenu( game){
 			player.update(delta);
 			em.update(delta);
 
-			if(em.list.length === 0 && game.audio.music.state === game.audio.music.PLAY)
-				game.openGui(GUI.PLAY);
+			if(em.list.length < 2){
+				if(!em.list[0] || em.list[0].angle !== 0)
+					game.openGui(GUI.PLAY);
+				else
+					game.openGui(GUI.OPTIONS);
+			}
 		},
 		//RENDER
 		function(){
@@ -168,13 +200,7 @@ function buildGuiMenu( game){
 			drawArrow();
 		}
 	);
-	
-	gui.up = function(e){
-		player.cursor.up( e, this);
 
-		if(em.list.length === 0)
-			game.audio.music.play();
-	};
 	return gui; 
 }
 
@@ -196,6 +222,12 @@ function buildGuiPlay( game){
 
 				for( key in l )
 					window.addEventListener( key, l[key], false);
+
+				em.reset();
+				controler.reset();
+				
+				game.audio.music.stop();
+				game.audio.music.play();
 		},
 		
 		//CLOSE
@@ -214,14 +246,19 @@ function buildGuiPlay( game){
 
 			for( key in l )
 				window.removeEventListener( key, l[key], false);
-			
-			controler.reset();
 		},
 		
 		//UPDATE
 		function(delta){
 			controler.update(delta);
 			em.updatePattern(delta);
+			
+			var range = em.getNearestRange();
+			if(range< 40)
+				game.audio.music.filterFreq = 22000 *range /60 *range /60;
+			else
+				game.audio.music.filterFreq = 22000;
+			
 
 			player.update( delta);
 			em.update( delta);
@@ -266,8 +303,29 @@ function buildGuiOptions( game){
 	var gui = new Gui(
 		//OPEN
 		function(){
-			this.input[0].data = game.audio.music.volume;
-			this.input[1].data = game.audio.fx.volume;
+			this.inputs[0].data = game.audio.fx.volume;
+			this.inputs[1].data = game.audio.music.volume;
+			
+			switch(game.difficulty){
+				case 1:
+						this.inputs[2].color = '#FF0';
+						this.inputs[2].data = .66;
+					break;
+				case 2:
+						this.inputs[2].color = '#F00';
+						this.inputs[2].data = 1;
+					break;
+				default :
+						this.inputs[2].color = '#0F0';
+						this.inputs[2].data = .33;
+					break;
+			}
+
+			
+			em.reset();
+			em.pushEntity( new Entity( 80, Math.PI /2, 0, 
+					SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
+					COLOR[ Math.floor( Math.random() *COLOR.length) ]) );
 		},
 		//CLOSE
 		function(){
@@ -275,71 +333,136 @@ function buildGuiOptions( game){
 		//UPDATE
 		function(delta){;
 			player.update(delta);
+			em.update(delta);
 			
-			for(var i=0; i < this.input.length; i++)
-				this.input[i].update();
+			for(var i=0; i < this.inputs.length; i++)
+				this.inputs[i].update();
+			
+			if(em.list.length === 0)
+				game.openGui(GUI.MENU);
 		},
 		//RENDER
 		function(){
 			player.drawBackground();
+			em.draw();
 			player.draw();
 			
 			CTX.globalAlpha = .25;
 			CTX.fillStyle = '#FFF';
 			
-			for(var i=0; i < this.input.length; i++)
-				this.input[i].render();
+			for(var i=0; i < this.inputs.length; i++)
+				this.inputs[i].render();
 			
 			CTX.globalAlpha = 1;
+
+			CTX.textAlign = 'center';
+			CTX.fillStyle = '#FFF';
+			CTX.fillText('BACK', 0, 90 *SCALE.y);
+			CTX.textAlign = 'start';
+			
 		}
 	);
 	
 	 function buttonRender(){
-		CTX.translate( this.x *SCALE.min, this.y *SCALE.min);
-		CTX.fillRect( 0, 0, this.width *SCALE.min, this.height *SCALE.min);
-		CTX.fillRect( 0, 0, this.width *this.data *SCALE.min, this.height *SCALE.min);
-		CTX.fillText( this.type, -20 *SCALE.min, 15 *SCALE.min, 18 *SCALE.min);
-		
-		CTX.translate( -this.x *SCALE.min, -this.y *SCALE.min);
+		CTX.fillRect( this.x *SCALE.min, this.y *SCALE.min, this.width *SCALE.min, this.height *SCALE.min);
+		CTX.fillRect( this.x *SCALE.min, this.y *SCALE.min, this.width *this.data *SCALE.min, this.height *SCALE.min);
+		CTX.fillText( this.type, ( this.x -20) *SCALE.min, ( this.y +this.height) *SCALE.min, 18 *SCALE.min);
 	};
 	
-	gui.input =[{
-		type: 'Fx',
+	gui.inputs =[{
+		type: 'FX',
 		data: 0,
 		x: -60,
 		y: -60,
 		height: 15,
 		width: 120,
 		update: function(){
+			var c = {
+				press: player.cursor.press,
+				x: player.cursor.x /SCALE.min *SCALE.x,
+				y: player.cursor.y /SCALE.min *SCALE.y
+			};
+
+			if(	c.press && c.x > this.x && c.x < this.x +this.width && c.y > this.y && c.y < this.y +this.height){
+					game.audio.fx.volume = this.data = ( c.x -this.x) /this.width;
+					localStorage.setItem( 'fx.volume', game.audio.fx.volume.toString());
+					
+					if(game.audio.fx.state === game.audio.fx.STOP)
+						game.audio.fx.play();
+			}
 		},
 		render: buttonRender
 	},{
-		type: 'Msc',
+		type: 'MSC',
 		data: 0,
 		x: -60,
 		y: -30,
 		height: 15,
 		width: 120,
 		update: function(){
-			
+			var c = {
+				press: player.cursor.press,
+				x: player.cursor.x /SCALE.min *SCALE.x,
+				y: player.cursor.y /SCALE.min *SCALE.y
+			};
+
+			if(	c.press && c.x > this.x && c.x < this.x +this.width && c.y > this.y && c.y < this.y +this.height){
+					game.audio.music.volume = this.data = ( c.x -this.x) /this.width;
+					localStorage.setItem( 'music.volume', game.audio.music.volume.toString());
+			}
 		},
 		render: buttonRender
 	},{
-		type: 'LvL',
+		type: 'LVL',
+		color: '#0F0',
 		data: 0,
 		x: -60,
-		y: 30,
+		y: 15,
 		height: 15,
 		width: 120,
 		update: function(){
-			
+			var c = {
+				press: player.cursor.press,
+				x: player.cursor.x /SCALE.min *SCALE.x,
+				y: player.cursor.y /SCALE.min *SCALE.y
+			};
+
+			if(	c.press && c.x > this.x && c.x < this.x +this.width && c.y > this.y && c.y < this.y +this.height){
+				var progress = this.data = ( c.x -this.x) /this.width;
+				
+				if(progress < .33){
+					this.color = '#0F0';
+					this.data = .33;
+					game.difficulty = 0;
+					
+				}else if(progress < .66){
+					this.color = '#FF0';
+					this.data = .66;
+					game.difficulty = 1;
+					
+				}else{
+					this.color = '#F00';
+					this.data = 1;
+					game.difficulty = 2;
+				}
+				
+				localStorage.setItem( 'difficulty', game.difficulty.toString());
+			}
 		},
-		render: buttonRender
+		render: function(){
+			CTX.fillStyle = this.color;
+
+			CTX.translate( this.x *SCALE.min, this.y *SCALE.min);
+			CTX.fillRect( 0, 0, this.width *SCALE.min, this.height *SCALE.min);
+			CTX.fillRect( 0, 0, this.width *this.data *SCALE.min, this.height *SCALE.min);
+			CTX.fillText( this.type, -20 *SCALE.min, 15 *SCALE.min, 18 *SCALE.min);
+			
+			CTX.translate( -this.x *SCALE.min, -this.y *SCALE.min);
+		}
 	}];
 
 	return gui;
 }
-
 
 function drawArrow(){
 	CTX.globalAlpha = .6;

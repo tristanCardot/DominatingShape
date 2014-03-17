@@ -10,16 +10,6 @@ function EntityManager(){
 EntityManager.prototype = {
 	reset : function(){
 		this.list = [];
-		this.list.push( new Entity(
-				SIZE* .9,
-				0,
-				0,
-				SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
-				COLOR[ Math.floor( Math.random() *COLOR.length) ]
-			));
-		
-		player.morphing( this.list[0]);
-		controler.rotationSpeed = Math.PI/2000;
 		
 		switch( game.difficulty){
 			case 0: game.speed = 1;
@@ -89,9 +79,9 @@ EntityManager.prototype = {
 		for(i=0; i<this.list.length; i++)
 			if( this.list[i].update(delta)){
 				while( this.list.length !== 0)
-					this.remove( this.list[i]);
-				
-				game.audioChan.stop();
+					this.remove( this.list[0]);
+
+				game.audio.music.stop();
 				game.openGui( GUI.MENU);
 				return;
 			}
@@ -117,6 +107,18 @@ EntityManager.prototype = {
 		this.lastOffset = select;
 
 		return this.list[select];
+	},
+	
+	getNearestRange : function(){
+		var select = this.list[0];
+		for(var i=0; i<this.list.length; i++)
+			if(select.range > this.list[i].range)
+				select = this.list[i];
+			
+		if(select)
+			return select.range;
+		else
+			return 100;
 	},
 
 	getCollide : function(p1, p2){
