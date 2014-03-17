@@ -72,7 +72,7 @@ Game.prototype = {
 		
 
 		this.guiList[GUI.LOADER].loadList({
-			music : 'love',
+			music : 'higeDrive',
 			fx : 'biup'
 		});
 		

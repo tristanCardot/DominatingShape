@@ -197,7 +197,59 @@ function buildGuiMenu( game){
 			player.drawBackground();
 			em.draw();
 			player.draw();
-			drawArrow();
+			
+			CTX.globalAlpha = .8;
+			CTX.fillStyle = '#FFF';
+			
+			
+			CTX.translate( 80 *SCALE.x, 0);
+			CTX.scale( SCALE.min, SCALE.min);
+
+			CTX.beginPath();
+			CTX.moveTo( 15, 0);
+			CTX.lineTo( -10.5, -15);
+			CTX.lineTo( -10.5, 15);
+			CTX.closePath();
+			CTX.fill();
+			
+			CTX.scale( 1 /SCALE.min, 1 /SCALE.min);
+			CTX.translate( -160 *SCALE.x, 0);
+			CTX.scale( SCALE.min, SCALE.min);
+			
+			CTX.beginPath();
+			
+			CTX.arc( 0, 0, 12, 0, Math.PI *2, false);
+			
+			CTX.moveTo(-6, -16);
+			CTX.lineTo(-6, -6);
+			
+			CTX.lineTo(-16, -6);
+			CTX.lineTo(-16, 6);
+
+			CTX.lineTo(-6, 6);
+			CTX.lineTo(-6, 16);
+
+			CTX.lineTo(6, 16);
+			CTX.lineTo(6, 6);
+			
+			CTX.lineTo(16, 6);
+			CTX.lineTo(16, -6);
+
+			CTX.lineTo(6, -6);
+			CTX.lineTo(6, -16);
+			
+			CTX.lineTo(-6, -16);
+			
+			CTX.moveTo(0, 0);
+
+			CTX.arc( 0, 0, 12, 0, Math.PI *2, false);
+			CTX.arc( 0, 0, 4, 0, Math.PI *2, true);
+			
+			CTX.closePath();
+			CTX.fill();
+			
+			CTX.scale( 1 /SCALE.min, 1 /SCALE.min);
+			CTX.translate(80 *SCALE.x, 0);
 		}
 	);
 
@@ -329,6 +381,7 @@ function buildGuiOptions( game){
 		},
 		//CLOSE
 		function(){
+			game.audio.music.stop();
 		},
 		//UPDATE
 		function(delta){;
@@ -369,48 +422,41 @@ function buildGuiOptions( game){
 		CTX.fillText( this.type, ( this.x -20) *SCALE.min, ( this.y +this.height) *SCALE.min, 18 *SCALE.min);
 	};
 	
+	function buttonUpdate(){
+		var c = {
+			press: player.cursor.press,
+			x: player.cursor.x /SCALE.min *SCALE.x,
+			y: player.cursor.y /SCALE.min *SCALE.y
+		};
+
+		if(	c.press && c.x > this.x && c.x < this.x +this.width && c.y > this.y && c.y < this.y +this.height){
+				game.audio[this.name].volume = this.data = ( c.x -this.x) /this.width;
+				localStorage.setItem( this.name +'.volume', game.audio[this.name].volume.toString());
+
+				if(game.audio[this.name].state === game.audio[this.name].STOP)
+					game.audio[this.name].play();
+		}
+	};
+	
 	gui.inputs =[{
 		type: 'FX',
+		name: 'fx',
 		data: 0,
 		x: -60,
 		y: -60,
 		height: 15,
 		width: 120,
-		update: function(){
-			var c = {
-				press: player.cursor.press,
-				x: player.cursor.x /SCALE.min *SCALE.x,
-				y: player.cursor.y /SCALE.min *SCALE.y
-			};
-
-			if(	c.press && c.x > this.x && c.x < this.x +this.width && c.y > this.y && c.y < this.y +this.height){
-					game.audio.fx.volume = this.data = ( c.x -this.x) /this.width;
-					localStorage.setItem( 'fx.volume', game.audio.fx.volume.toString());
-					
-					if(game.audio.fx.state === game.audio.fx.STOP)
-						game.audio.fx.play();
-			}
-		},
+		update: buttonUpdate,
 		render: buttonRender
 	},{
 		type: 'MSC',
+		name: 'music',
 		data: 0,
 		x: -60,
 		y: -30,
 		height: 15,
 		width: 120,
-		update: function(){
-			var c = {
-				press: player.cursor.press,
-				x: player.cursor.x /SCALE.min *SCALE.x,
-				y: player.cursor.y /SCALE.min *SCALE.y
-			};
-
-			if(	c.press && c.x > this.x && c.x < this.x +this.width && c.y > this.y && c.y < this.y +this.height){
-					game.audio.music.volume = this.data = ( c.x -this.x) /this.width;
-					localStorage.setItem( 'music.volume', game.audio.music.volume.toString());
-			}
-		},
+		update: buttonUpdate,
 		render: buttonRender
 	},{
 		type: 'LVL',
@@ -462,26 +508,6 @@ function buildGuiOptions( game){
 	}];
 
 	return gui;
-}
-
-function drawArrow(){
-	CTX.globalAlpha = .6;
-	CTX.fillStyle = '#FFF';
-	
-	CTX.scale(SCALE.x, SCALE.x);
-	
-	CTX.moveTo(75, 0);
-
-	CTX.lineTo(65, -10);
-	CTX.lineTo(65, -5);
-	CTX.lineTo(15, -3);
-	CTX.lineTo(15, 3);
-	CTX.lineTo(65, 5);
-	CTX.lineTo(65, 10);
-	
-	CTX.scale(1/SCALE.x, 1/SCALE.x);
-	
-	CTX.fill();
 }
 	
 

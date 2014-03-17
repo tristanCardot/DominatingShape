@@ -28,7 +28,7 @@ Shape.prototype = {
 	},
 
 	fill : function(ctx){
-		var scale = 2.5 *SCALE.min;
+		var scale = 4 *SCALE.min;
 		
 		ctx.scale( scale, scale);
 		ctx.beginPath();

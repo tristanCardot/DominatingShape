@@ -19,7 +19,6 @@ Player.prototype = {
 		
 		if(CANVAS.height < CANVAS.width)
 			max = CANVAS.width/1.33;
-
 		else
 			max = CANVAS.height/1.33;
 
@@ -43,6 +42,12 @@ Player.prototype = {
 
 		CTX.globalAlpha = 1;
 		CTX.rotate(-this.shape.rotation);
+	},
+	
+	/** Dessine le Score*/
+	drawScore : function(){
+		CTX.fillStyle = CTX.strokeStyle;
+		CTX.fillText( this.score, -CANVAS.width /2 +SCALE.x, -CANVAS.height /2 +( SCALE.min) *16);
 	},
 	
 	/**Mais à jour les paramétres liés au joueur/background.
@@ -90,9 +95,6 @@ Player.prototype = {
 
 		this.particle.draw();
 		this.shape.draw();
-
-		CTX.fillStyle = CTX.strokeStyle;
-		CTX.fillText( this.score, -CANVAS.width /2 +SCALE.x, -CANVAS.height /2 +( SCALE.min) *16);
 	},
 	
 	/**Dessine la barre de progression. */

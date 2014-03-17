@@ -15,8 +15,8 @@ Controler.prototype = {
 		var d = getAudioData();
 		
 		this.angleSpeed = this.angleSpeed /2 +( ( ( d[2] %64) +( d[3] %128) -( d[6] %256)) /( 256) ) *.0005 *game.speed;
-		this.rotationSpeed = this.rotationSpeed /2 + ( ( ( d[2] %64) +( d[4] %128) -( d[8] %256)) /( 256) ) *.005 *game.speed;
-		this.scale = ( ( ( d[5] -this.data[5]) +( d[7] -this.data[7]) +( d[9] -this.data[9]) ) /64);
+		this.rotationSpeed = this.rotationSpeed /2 + ( ( ( d[2] %64) +( d[4] %128) -( d[8] %256)) /( 256) ) *.0025 *( game.speed *game.speed);
+		this.scale = ( ( Math.abs( d[5] -this.data[5]) +Math.abs( d[7] -this.data[7]) +Math.abs( d[9] -this.data[9]) ) /64);
 		
 		this.angle += this.angleSpeed *delta;
 		this.data = d;

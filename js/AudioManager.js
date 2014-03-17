@@ -92,7 +92,10 @@ var AM =(function(){
 			var reader = new FileReader();
 
 	 		reader.onload = function( readEvent){	 	
-	 			localStorage.setItem(name +'.data', readEvent.target.result);
+	 			try{
+	 				localStorage.setItem(name +'.data', readEvent.target.result);
+	 			}catch(e){
+	 			}
 	 			
 	 			var buffer = (function(str) {
 	 			  	var buf = new ArrayBuffer(str.length*2);
@@ -146,14 +149,17 @@ var AM =(function(){
 			PLAY : 2,
 
 			play : function(){
+				var self = this;
 				var source = this.ctx.createBufferSource();
 				source.loop = this.loop;
 				source.buffer = this.buffer;
 				source.connect(this.filter);
 				
 				source.onended = function(){
-					if(!this.loop)
+					if(!this.loop){
+						self.state = self.STOP;
 						this.disconnect( 0);
+					}
 				};
 
 				if( this.state === this.PAUSE){
