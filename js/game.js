@@ -77,11 +77,11 @@ Game.prototype = {
 			false);
 		
 		window.addEventListener('resize',
-			function(e){game.resize();},		
+			function(e){game.resize();},
 			false);
 		
 		this.guiList[GUI.LOADER].loadList({
-			music : 'higeDrive',
+			music : 'Inspiration',
 			fx : 'biup'
 		});
 		

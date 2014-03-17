@@ -32,19 +32,19 @@ Player.prototype = {
 			CTX.fillStyle = this.color.evaluate( this.shape.values[i]);
 			
 			CTX.beginPath();
-			CTX.moveTo( 0, 0 );
-			CTX.lineTo( Math.sin(rad) *max, -Math.cos(rad) *max );
-			CTX.lineTo( Math.sin( ( rad +toRad ) /2) *max *2, -Math.cos( ( rad +toRad ) /2 ) *max *2 );
-			CTX.lineTo( Math.sin(toRad) *max, -Math.cos(toRad) *max );
+			CTX.moveTo( 0, 0);
+			CTX.lineTo( Math.sin(rad) *max, -Math.cos(rad) *max);
+			CTX.lineTo( Math.sin( ( rad +toRad ) /2) *max *2, -Math.cos( ( rad +toRad ) /2 ) *max *2);
+			CTX.lineTo( Math.sin(toRad) *max, -Math.cos(toRad) *max);
 			CTX.closePath();
 			CTX.fill();
 		}
 
 		CTX.globalAlpha = 1;
-		CTX.rotate(-this.shape.rotation);
+		CTX.rotate( -this.shape.rotation);
 	},
 	
-	/** Dessine le Score*/
+	/** Dessine le Score.*/
 	drawScore : function(){
 		CTX.fillStyle = CTX.strokeStyle;
 		CTX.fillText( this.score, -CANVAS.width /2 +SCALE.x, -CANVAS.height /2 +( SCALE.min) *16);
@@ -88,7 +88,7 @@ Player.prototype = {
 		this.color.morphing(target.color);
 	},
 	
-	/**Dessine la forme centrale représentent le joueur. */
+	/**Dessine la forme centrale représentent le joueur.*/
 	draw : function(){
 		CTX.fillStyle = this.color.evaluate(.4);
 		CTX.strokeStyle = this.color.evaluate(1);
@@ -97,7 +97,7 @@ Player.prototype = {
 		this.shape.draw();
 	},
 	
-	/**Dessine la barre de progression. */
+	/**Dessine la barre de progression.*/
 	drawFromProgress : function(progress){
 		CTX.fillStyle = this.color.evaluate( .4);
 		CTX.strokeStyle = this.color.evaluate( progress);
@@ -106,6 +106,7 @@ Player.prototype = {
 		this.shape.draw();
 	},
 	
+	/**Met à jour le score.*/
 	updateScore : function(){
 		if( this.combo === 0)
 			return;
@@ -116,6 +117,7 @@ Player.prototype = {
 		this.morphing( em.getTarget());
 	},
 	
+	/**Rénisialise les données du joueur.*/
 	reset : function(){
 		this.score = 0;
 		this.combo = 0;
@@ -160,7 +162,7 @@ ColorP.prototype.update = function(delta){
 			this.b = this.targetB;
 		
 		}else{
-			var progress = Math.sin( this.transition /this.transitionDelay );
+			var progress = Math.sin( this.transition /this.transitionDelay) /2;
 			
 			this.r = ( this.targetR -this.r ) *progress +this.r;
 			this.g = ( this.targetG -this.g ) *progress +this.g;
@@ -173,11 +175,11 @@ ColorP.prototype.update = function(delta){
  */
 ColorP.prototype.morphing = function(target){
 	this.id = target.id;
-	
+
 	this.targetR = target.r;
 	this.targetG = target.g;
 	this.targetB = target.b;
-	
+
 	this.transition = 0;
 };
 
@@ -199,14 +201,14 @@ function ShapeP(id){
 	this.scale = 10;
 	
 	for(var i=0; i<this.sides; i++){
-		this.rads.push(PI2 /this.sides *i);
-		this.values.push(.1 +( i %2 ) /20);
+		this.rads.push( PI2 /this.sides *i);
+		this.values.push( .1 +( i %2 ) /20);
 	}
 	
-	if(this.sides%2 === 1)
-		this.values[ this.values.length-1 ] = .125;
+	if( this.sides%2 === 1)
+		this.values[ this.values.length-1] = .125;
 
-	this.rads.push(PI2);
+	this.rads.push( PI2);
 
 	this.targetValues = this.values;
 	this.targetRads = this.rads;
@@ -215,25 +217,25 @@ function ShapeP(id){
 ShapeP.prototype = {
 	/**Dessine la forme du joueur.*/
 	draw : function(){
-		var scale = (this.scale +controler.scale) *SCALE.min;
+		var scale = controler.scale *SCALE.min;
 		
 		
-		CTX.rotate( this.rotation );
+		CTX.rotate( this.rotation);
 		CTX.scale( scale, scale);
 		
 		CTX.beginPath();
 		
-		CTX.moveTo( Math.sin(this.rads[0]), -Math.cos(this.rads[0]));
+		CTX.moveTo( Math.sin( this.rads[0]), -Math.cos( this.rads[0]));
 
 		for(var i=1; i<this.rads.length; i++)
-			CTX.lineTo( Math.sin(this.rads[i]), -Math.cos(this.rads[i]));
+			CTX.lineTo( Math.sin( this.rads[i]), -Math.cos( this.rads[i]));
 
 		CTX.closePath();
 
 		CTX.fill();
 		CTX.stroke();
 		
-		CTX.scale( 1 /scale, 1/scale);
+		CTX.scale( 1 /scale, 1 /scale);
 		CTX.rotate( -this.rotation);
 	},
 	
@@ -267,18 +269,18 @@ ShapeP.prototype = {
 		var min,max,overflow,i,index;
 
 		for(i=0; i<this.sides; i++){
-			this.targetRads.push(PI2 /this.sides *i);
-			this.targetValues.push(.1 +( i %2 ) /20);
+			this.targetRads.push( PI2 /this.sides *i);
+			this.targetValues.push( .1 +( i %2) /20);
 		}
 		
 		if(this.sides%2 === 1)
-			this.targetValues[ this.targetValues.length-1 ] = .125;
+			this.targetValues[ this.targetValues.length -1] = .125;
 		
-		this.targetRads.push(PI2);
+		this.targetRads.push( PI2);
 		
 		
-		if(this.rads.length !== this.targetRads.length){
-			if( this.rads.length < this.targetRads.length ){
+		if( this.rads.length !== this.targetRads.length){
+			if( this.rads.length < this.targetRads.length){
 				min = this.rads;
 				max = this.targetRads;
 				
@@ -290,12 +292,12 @@ ShapeP.prototype = {
 			overflow = max.length -min.length;
 
 			for(i=0; i<overflow; i++){
-				index = Math.round( min.length /overflow *i );
+				index = Math.round( min.length /overflow *i);
 				min.splice(index, 0, min[index]);
 			}
 			
 			
-			if( this.values.length < this.targetValues.length ){
+			if( this.values.length < this.targetValues.length){
 				min = this.values;
 				max = this.targetValues;
 				
@@ -307,38 +309,38 @@ ShapeP.prototype = {
 			overflow = max.length -min.length;
 
 			for(i=0; i<overflow; i++){
-				index = Math.round( min.length /overflow *i );
-				min.splice(index, 0, min[index]);
+				index = Math.round( min.length /overflow *i);
+				min.splice( index, 0, min[index]);
 			}
 		}
 	},
 	
 	/**Mais à jour la forme si nécessaire. */
 	update : function(delta){
-		if( this.transition < this.transitionDelay ){
+		if( this.transition < this.transitionDelay){
 			this.transition += delta;
 			var i=0;
 
-			if( this.transition >= this.transitionDelay ){
+			if( this.transition >= this.transitionDelay){
 				this.rads = [];
 				this.values = [];
 				
 				for(; i<this.targetRads.length; i++)
-					if( this.targetRads[i] !== this.targetRads[i-1] )
-						this.rads.push( this.targetRads[i] );
+					if( this.targetRads[i] !== this.targetRads[i-1])
+						this.rads.push( this.targetRads[i]);
 				
 				for(i=0; i<this.targetValues.length; i++)
-					if( this.targetValues[i] !== this.targetValues[i-1] )
-						this.values.push( this.targetValues[i] );
+					if( this.targetValues[i] !== this.targetValues[i-1])
+						this.values.push( this.targetValues[i]);
 
 			}else{
-				var progress = Math.sin( this.transition /this.transitionDelay );
+				var progress = Math.sin( this.transition /this.transitionDelay) /2;
 
 				for(; i<this.rads.length; i++)
-					this.rads[i] = (this.targetRads[i] -this.rads[i]) *progress +this.rads[i];
+					this.rads[i] = ( this.targetRads[i] -this.rads[i]) *progress +this.rads[i];
 				
 				for(i=0; i<this.values.length; i++)
-					this.values[i] = (this.targetValues[i] -this.values[i]) *progress +this.values[i];
+					this.values[i] = ( this.targetValues[i] -this.values[i]) *progress +this.values[i];
 			}
 		}
 	}

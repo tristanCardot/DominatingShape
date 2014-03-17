@@ -16,7 +16,8 @@ window.GUI = {
 	LOADER : 0,
 	MENU : 1,
 	PLAY : 2,
-	OPTIONS : 3
+	OPTIONS : 3,
+	CREDIT : 4 
 };
 
 function buildGui( game){
@@ -24,7 +25,8 @@ function buildGui( game){
 		buildGuiLoader( game),
 		buildGuiMenu( game),
 		buildGuiPlay( game),
-		buildGuiOptions( game)
+		buildGuiOptions( game),
+		buildGuiCredit( game)
 	];
 }
 
@@ -153,7 +155,7 @@ function buildGuiMenu( game){
 				window.addEventListener( key, l[key], false);
 
 			controler.reset();
-			controler.scale = 10;
+			controler.scale = 20;
 			controler.rotationSpeed = 0.001;
 			
 			em.reset();
@@ -225,8 +227,11 @@ function buildGuiMenu( game){
 			
 			CTX.arc( 0, 0, 12, 0, Math.PI *2, false);
 			
+			CTX.rotate(-Math.PI /12);
+			
 			CTX.moveTo( -6, -16);
 			CTX.lineTo( -6, -6);
+			
 			
 			CTX.lineTo( -16, -6);
 			CTX.lineTo( -16, 6);
@@ -242,8 +247,10 @@ function buildGuiMenu( game){
 
 			CTX.lineTo( 6, -6);
 			CTX.lineTo( 6, -16);
-			
+
 			CTX.lineTo( -6, -16);
+
+			CTX.rotate(Math.PI /12);
 			
 			CTX.moveTo( 0, 0);
 
@@ -256,6 +263,8 @@ function buildGuiMenu( game){
 			CTX.scale( 1 /SCALE.min, 1 /SCALE.min);
 			CTX.translate( 80 *SCALE.x, 0);
 			
+
+			CTX.globalAlpha = 1;
 			CTX.textAlign = 'center';
 			CTX.fillStyle = (function(){
 				switch( game.difficulty){
@@ -269,13 +278,16 @@ function buildGuiMenu( game){
 			
 			CTX.fillStyle = '#FFF';
 			
+			if( player.score > 0)
+				CTX.fillText( player.score, 0, 8 *SCALE.min, 100 *SCALE.x);
+
 			var font = CTX.font;
 			CTX.font = ( ( SCALE.min) *32) +'px Byte';
 			
-			CTX.fillText( 'SHAPE', -50 *SCALE.min, -75 *SCALE.y, 100 *SCALE.min);
+			CTX.fillText( 'SHAPE', -45 *SCALE.min, -75 *SCALE.y, 90 *SCALE.min);
 			
 			CTX.fillStyle = this.color.evaluate(1.0);
-			CTX.fillText( 'COLOR', 50 *SCALE.min, -60 *SCALE.y, 100 *SCALE.min);
+			CTX.fillText( 'COLOR', 45 *SCALE.min, -60 *SCALE.y, 90 *SCALE.min);
 			
 			CTX.font = font;
 			
@@ -308,6 +320,7 @@ function buildGuiPlay( game){
 					window.addEventListener( key, l[key], false);
 
 				em.reset();
+				em.resetPattern();
 				controler.reset();
 				player.reset();
 				
@@ -353,9 +366,9 @@ function buildGuiPlay( game){
 		function(){
 			player.drawBackground();
 			em.draw();
+			
 			player.draw();
 			player.drawScore();
-			
 			
 			controler.draw();
 		}
@@ -408,7 +421,6 @@ function buildGuiOptions( game){
 					break;
 			}
 
-			
 			em.reset();
 			em.pushEntity( new Entity( 80, Math.PI /2, 0, 
 					SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
@@ -417,6 +429,7 @@ function buildGuiOptions( game){
 		//CLOSE
 		function(){
 			game.audio.music.stop();
+			player.score = 0;
 		},
 		//UPDATE
 		function(delta){;
@@ -434,14 +447,11 @@ function buildGuiOptions( game){
 			player.drawBackground();
 			em.draw();
 			player.draw();
-			
-			CTX.globalAlpha = .25;
+
 			CTX.fillStyle = '#FFF';
 			
 			for(var i=0; i < this.inputs.length; i++)
 				this.inputs[i].render();
-			
-			CTX.globalAlpha = 1;
 
 			CTX.textAlign = 'center';
 			CTX.fillStyle = '#FFF';
@@ -452,8 +462,11 @@ function buildGuiOptions( game){
 	);
 	
 	 function buttonRender(){
+		CTX.globalAlpha = .5;
 		CTX.fillRect( this.x *SCALE.min, this.y *SCALE.min, this.width *SCALE.min, this.height *SCALE.min);
 		CTX.fillRect( this.x *SCALE.min, this.y *SCALE.min, this.width *this.data *SCALE.min, this.height *SCALE.min);
+		
+		CTX.globalAlpha = 1;
 		CTX.fillText( this.type, ( this.x -20) *SCALE.min, ( this.y +this.height) *SCALE.min, 18 *SCALE.min);
 	};
 	
@@ -477,7 +490,7 @@ function buildGuiOptions( game){
 		type: 'FX',
 		name: 'fx',
 		data: 0,
-		x: -60,
+		x: -50,
 		y: -60,
 		height: 15,
 		width: 120,
@@ -487,7 +500,7 @@ function buildGuiOptions( game){
 		type: 'MSC',
 		name: 'music',
 		data: 0,
-		x: -60,
+		x: -50,
 		y: -30,
 		height: 15,
 		width: 120,
@@ -497,7 +510,7 @@ function buildGuiOptions( game){
 		type: 'LVL',
 		color: '#0F0',
 		data: 0,
-		x: -60,
+		x: -50,
 		y: 15,
 		height: 15,
 		width: 120,
@@ -531,11 +544,15 @@ function buildGuiOptions( game){
 			}
 		},
 		render: function(){
+			CTX.globalAlpha = .5;
 			CTX.fillStyle = this.color;
 
 			CTX.translate( this.x *SCALE.min, this.y *SCALE.min);
+			
 			CTX.fillRect( 0, 0, this.width *SCALE.min, this.height *SCALE.min);
 			CTX.fillRect( 0, 0, this.width *this.data *SCALE.min, this.height *SCALE.min);
+			
+			CTX.globalAlpha = 1;
 			CTX.fillText( this.type, -20 *SCALE.min, 15 *SCALE.min, 18 *SCALE.min);
 			
 			CTX.translate( -this.x *SCALE.min, -this.y *SCALE.min);
@@ -545,8 +562,32 @@ function buildGuiOptions( game){
 	return gui;
 }
 	
-
-
+function buildGuiCredit(){
+	var gui = new Gui(
+		//OPEN
+		function(){
+			em.reset();
+			em.pushEntity( new Entity( 80, Math.PI /2, 0,
+					SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
+					COLOR[ Math.floor( Math.random() *COLOR.length) ]) );
+		},
+		//CLOSE
+		function(){
+		},
+		//UPDATE
+		function(delta){
+		},
+		//RENDER
+		function(){
+		}
+	);
+	
+	
+	
+	
+	
+	return gui;
+}
 
 
 

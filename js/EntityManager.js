@@ -1,13 +1,17 @@
+/**@constructor*/
 function EntityManager(){
 	this.list = [];
 	this.particles = [];
-	this.currentLevel = 0;
 	this.lastOffset = 0;
+	
 	this.audioChan = null;
-	this.currentPattern = new Pattern( PATTERN[0]);
+	
+	this.lastPatternIndex = 0;
+	this.currentPattern = null;
 }
 
 EntityManager.prototype = {
+	/**Rénisialise la liste des entités et la vitesse celon la difficultée.*/
 	reset : function(){
 		this.list = [];
 		
@@ -21,6 +25,7 @@ EntityManager.prototype = {
 		}
 	},
 	
+	/**Génération aléatoire d'entités.
 	spawn : function(){
 		var needMorph = this.list.length === 0;
 		var rad = ( Math.floor( Math.random() *6) *Math.PI /3 +player.shape.rotation) %PI2;
@@ -36,8 +41,11 @@ EntityManager.prototype = {
 
 		if(needMorph)
 			player.morphing( this.list[0]);
-	},
+	},*/
 	
+	/**Ajoute l'entité entity.
+	 * @param {Entity} entity 
+	 */
 	pushEntity : function( entity){
 		this.list.push( entity);
 		
@@ -45,6 +53,9 @@ EntityManager.prototype = {
 			player.morphing( this.list[0]);
 	},
 	
+	/**Met à jour le parterne courant.
+	 * @param {Number} delta
+	 */
 	updatePattern : function(delta){
 		var result = this.currentPattern.update(delta);
 		
@@ -54,14 +65,22 @@ EntityManager.prototype = {
 					break;
 				case 1: game.speed += 0.015;
 					break;
-				case 2: game.speed += 0.025;
+				case 2: game.speed += 0.020;
 					break;				
 			}
 			
-			this.currentPattern = new Pattern(PATTERN[ Math.floor( Math.random() *PATTERN.length) ], result);
+			var id = Math.floor( Math.random() *PATTERN.length);
+			if( this.lastPatternIndex === id)
+				id = ( id +2) %PATTERN.length;
+			
+			this.lastPatternIndex = id;
+			this.currentPattern = new Pattern( PATTERN[ id], result);
 		}
 	},
-
+	
+	/**Met à jour la liste des entités.
+	 * @param {Number} delta
+	 */
 	update : function(delta){
 		var i, s;
 		
@@ -86,7 +105,8 @@ EntityManager.prototype = {
 				return;
 			}
 	},
-
+	
+	/**Dessine l'ensembles des entités & particles.*/
 	draw : function(){
 		for(var i=0; i<this.particles.length; i++)
 			this.particles[i].draw();
@@ -94,9 +114,12 @@ EntityManager.prototype = {
 		for(var i=0; i<this.list.length; i++)
 			this.list[i].draw();
 	},
-
+	
+	/**Récupére la prochaine cible du joueur.
+	 * @return {Entity} 
+	 */
 	getTarget : function(){
-		var select = ~~( Math.random() *4) -this.lastOffset;
+		var select = ~~( Math.random() *( 4 -game.difficulty) ) -this.lastOffset;
 
 		if( select >= this.list.length )
 			select = this.list.length -1;
@@ -108,7 +131,10 @@ EntityManager.prototype = {
 
 		return this.list[select];
 	},
-	
+
+	/**Récupére la disstance le plus courte entre un joueur et une entité.
+	 * @return {Number}
+	 */
 	getNearestRange : function(){
 		var select = this.list[0];
 		for(var i=0; i<this.list.length; i++)
@@ -121,10 +147,15 @@ EntityManager.prototype = {
 			return 100;
 	},
 
-	getCollide : function(p1, p2){
+	/**Retourne une liste des entités qui rentrent en collision avec le segment [p1-p2].
+	 * @param {Object} p1
+	 * @param {Object} p2
+	 * @return {Array}
+	 */
+	getCollide : function( p1, p2){
 		var result = [];
 
-		for(var s,i=0, c={x:0,y:0}, rx, ry, p12={x:0,y:0},p1c={x:0,y:0},p2c={x:0,y:0}; i<this.list.length; i++){
+		for(var s, i=0, c={x:0,y:0}, rx, ry, p12={x:0,y:0}, p1c={x:0,y:0}, p2c={x:0,y:0}; i<this.list.length; i++){
 			s = this.list[i];
 
 			c.x = Math.cos( s.angle) *s.range;
@@ -165,7 +196,10 @@ EntityManager.prototype = {
 		return result;
 	},
 
-	lineCollide : function(p1, p2, c1, s){
+	/**Collision avec la droite p1->p2
+	 * @return {Boolean}
+	 */
+	lineCollide : function( p1, p2, c1, s){
 		var u = {x: p2.x -p1.x,
 		         y: p2.y -p1.y },
 		  p1c ={ x: c1.x -p1.x,
@@ -175,15 +209,19 @@ EntityManager.prototype = {
 	   if( num < 0)
 		   num = -num;
 	   
-	   return num /Math.sqrt( u.x *u.x +u.y *u.y)  <  s.scale;
+	   return num /Math.sqrt( u.x *u.x +u.y *u.y) < s.scale;
 	},
-
-	remove : function(entity){
-		var particle = new Particle( entity.shape, entity.color, 800 ),
-			x = Math.cos( entity.angle ) *entity.range *SCALE.x,
-			y = Math.sin( entity.angle ) *entity.range *SCALE.y;
+	
+	/**Retire une entité et ajoute les particules qui lui sont liées.
+	 * @param {Entity} entity
+	 */
+	remove : function( entity){
+		var particle = new Particle( entity.shape, entity.color, 800),
+			x = Math.cos( entity.angle) *entity.range *SCALE.x,
+			y = Math.sin( entity.angle) *entity.range *SCALE.y;
 		
 		var off = ( ( Math.random() *Math.PI) %( Math.PI /6) ) +Math.PI /2;
+		
 		for(var i=0; i<20; i++)
 			particle.add( x, y , 0.004 *SCALE.min *( i +1) +0.05 *SCALE.min, ( i +1) *off);
 		
@@ -194,9 +232,8 @@ EntityManager.prototype = {
 		this.list.splice( this.list.indexOf(entity), 1);
 	},
 
-	setAudioChan : function(audio){
-		audio.volume = .1;
-		this.audioChan = audio;
+	resetPattern : function(){
+		this.currentPattern = new Pattern( PATTERN[ ~~( Math.random() *PATTERN.length) ], 0);
 	}
 };
 

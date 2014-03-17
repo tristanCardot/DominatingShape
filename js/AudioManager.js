@@ -1,13 +1,17 @@
+/**@type {AudioManager}*/
 var AM =(function(){
 	var Ctx = window.AudioContext || window.webkitAudioContext;
+	
 	if( !Object.defineProperties || !XMLHttpRequest)
 		return;
 
+	/**@constructor*/
 	function AudioManager(){
 		this.ctx = Ctx && new Ctx() || null;
 		this.channel = {};
 	}
 
+	/**Permet de télécharger une liste de fichiers audio.*/
 	AudioManager.prototype.loadList = function( list, callback, onprogress){
 		var event = {
 			total : 0,
@@ -41,6 +45,7 @@ var AM =(function(){
 			this.load( key, list[key], event, this);
 	};
 
+	/**Ajout le chargement d'un fichier audio.*/
 	AudioManager.prototype.load = function( name, url, event, am){
 		var data = localStorage.getItem(name +'.data');
 		
@@ -115,10 +120,13 @@ var AM =(function(){
 					event.onerror();
 				});
             };
-
 			reader.readAsBinaryString( request.response);
 		};
 
+		/**@constructor
+		 * @param {AudioManager} am 
+		 * @param {Object} buffer
+		 */
 		function AudioChannel( am, buffer){
 			this.ctx = am.ctx;
 			this.buffer = buffer;
@@ -132,7 +140,7 @@ var AM =(function(){
 
 			this.analyser = am.ctx.createAnalyser();
 			this.analyser.smoothingTimeConstant = 0.85;
-			this.analyser.fftSize = 64;
+			this.analyser.fftSize = 32;
 			this.analyser.connect(this.gain);
 			
 			this.filter = am.ctx.createBiquadFilter();
@@ -147,7 +155,8 @@ var AM =(function(){
 			STOP : 0,
 			PAUSE : 1,
 			PLAY : 2,
-
+			
+			/**Met en lecture le buffer*/
 			play : function(){
 				var self = this;
 				var source = this.ctx.createBufferSource();
@@ -180,6 +189,7 @@ var AM =(function(){
 				this.state = this.PLAY;
 			},
 
+			/**Stop le buffer et garde en mémoire le currentTime*/
 			pause : function(){
 				if( this.state !== this.PLAY)
 					return;
@@ -188,7 +198,8 @@ var AM =(function(){
 				this.timer.paused = this.ctx.currentTime;
 				this.played.stop( 0);
 			},
-			
+
+			/**Stop le buffer*/
 			stop : function(){
 				if( this.state === this.STOP)
 					return;
@@ -205,19 +216,19 @@ var AM =(function(){
 		};
 
 		Object.defineProperties( AudioChannel.prototype, {
-			volume : {
+			volume : {//volume
 				get : function(){ return this.gain.gain.value;},
 				set : function( v){ this.gain.gain.value = v;}
 			},
-		    filterFreq : {
+		    filterFreq : {//fréquence de filtrage
 				get : function(){ return this.filter.frequency.value;},
 				set : function( v){ this.filter.frequency.value = v;}
 			},
-			filterType : {
+			filterType : {//type de filtrage
 				get : function(){ return this.filter.type;},
 				set : function( v){ this.filter.type = v;}
 			},
-			currentTime : {
+			currentTime : {//gestion du currentTime
 				get : function(){
 					switch(this.state){
 						case this.PLAY:
@@ -234,6 +245,7 @@ var AM =(function(){
 		});
 
 	}else{
+		//Surdéfinie la basile <audio> pour le renbtrer le plus compatible possible avec un audioChannel.
 		AudioManager.prototype.onloadChannel = function( request, e, event, am, name){
 			var node = document.createElement( 'audio');
 			node.addEventListener( 'ended', function(){
