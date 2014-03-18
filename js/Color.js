@@ -45,14 +45,14 @@ Color.prototype = {
  * @param {Number} b
  */
 Color.toString = function( r, g, b ){
-	return '#'+ ( 16777216 + (r<<16) + (g<<8) + (b<<0) ).toString(16).slice(1); 
+	return '#'+ ( 16777216 + (r<<16) + (g<<8) + (b<<0) ).toString(16).slice(1);
 };
 
 /**@type {Object}*/
 var COLOR = [
-	new Color(0, 255,0,0),
-	new Color(1, 0,255,0), 
-	new Color(2, 0,0,255),
+	new Color(0, 255,40,40),
+	new Color(1, 0,255,0),
+	new Color(2, 80,80,255),
 	new Color(3, 255,255,0),
 	new Color(4, 0,255,255),
 	new Color(5, 255,0,255)

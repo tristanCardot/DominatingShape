@@ -28,16 +28,18 @@ Shape.prototype = {
 	},
 
 	fill : function(ctx){
-		ctx.scale( 5, 5 );
+		var scale = 3.5 *SCALE.min;
+		
+		ctx.scale( scale, scale);
 		ctx.beginPath();
 		
-		ctx.moveTo( this.vertex[0], this.vertex[1] );
+		ctx.moveTo( this.vertex[0], this.vertex[1]);
 		
 		for(var i=2; i<this.vertex.length; i+=2)
-			ctx.lineTo( this.vertex[i], this.vertex[i+1] );
+			ctx.lineTo( this.vertex[i], this.vertex[i+1]);
 		
 		ctx.closePath();
-		ctx.scale( 1/5, 1/5 );
+		ctx.scale( 1/scale, 1/scale);
 		
 		ctx.fill();
 	}

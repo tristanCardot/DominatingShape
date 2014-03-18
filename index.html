@@ -2,10 +2,19 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Dominating shape</title>
+	<title>Shape Color</title>
 	<style id='style'>
+		@font-face {
+			font-family: 'Byte';
+			font-style: normal;
+			font-weight: 700;
+			src: local('Byte'), url(style/Byte.woff) format('woff');
+		}
+	
 		body{
-			margin:0px;
+			font-family: 'Byte';
+			margin: 0px;
+			background-color: black;
 		}
 
 		canvas{
@@ -16,14 +25,13 @@
 			width:100%;
 		}
 		
-		div#log{
+		a#linkA{
+			height: 10vh;
+			width: 100%;
 			position: absolute;
-			top: 0px;
-			left:0px;
-			color:white;
-			z-index: 10;
-			
-			background-color: rgba( 0, 0, 0, .5);
+			background-color: rgba(255,255,255,.15);
+			box-shadow: inset 0px 0px 5px white;
+			margin: auto;
 		}
 	</style>
 	
@@ -40,6 +48,7 @@
 	
 	<script type="text/javascript" charset="UTF-8" src="js/Entity.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/EntityManager.js"></script>
+	<script type="text/javascript" charset="UTF-8" src="js/Pattern.js"></script>
 	
 	<script type="text/javascript" charset="UTF-8" src="js/Gui.js"></script>
 	<script type="text/javascript" charset="UTF-8" src="js/game.js"></script>
@@ -55,37 +64,17 @@
 					window.setTimeout( callback, 1000 / 60 );
 				};
 		} )();
-		
-		var SIZE = 200,
-		SIZESQRT = Math.sqrt( SIZE *SIZE +SIZE *SIZE ) *1.1,
-		PI2 = Math.PI *2,
-		SCALE = {x:0, y:0};
 
 		/** @type {HTMLCanvasElement}*/
 		var CANVAS = document.createElement('canvas');
-			CANVAS.height = SIZE*2;
-			CANVAS.width = SIZE*2;
 	
 		/**@type {CanvasRenderingContext2D}*/
 		var CTX = CANVAS.getContext('2d');
 	
 		window.addEventListener('load', function(){
-			SCALE.x = window.innerWidth /( SIZE *2);
-			SCALE.y = window.innerHeight /( SIZE *2);
-
 			document.body.appendChild(CANVAS);
-			
 			game.onload();
 		}, false);
-	
-		window.addEventListener('resize', function(){
-			SCALE.x = window.innerWidth /( SIZE *2);
-			SCALE.y = window.innerHeight /( SIZE *2);
-		}, false);
-	
-		CTX.translate(CANVAS.width/2, CANVAS.height/2);
-		CTX.lineWidth = .20;
-		CTX.font = '40px sans-serif';
 
 		var player = new Player(),
 			em = new EntityManager(),
@@ -93,8 +82,5 @@
 	</script>
 </head>
 <body>
-	<div id='log'>
-		
-	</div>
 </body>
 </html>

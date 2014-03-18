@@ -29,14 +29,14 @@ Cursor.prototype = {
 			e = e.touches.item(0);
 		}
 		
-		this.lastX = this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
-		this.lastY = this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
+		this.lastX = this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x /SCALE.z;
+		this.lastY = this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y /SCALE.z;
 
-		this.press = Math.sqrt( this.x *this.x + this.y *this.y ) < 35;
+		this.press = true;
 	},
 	
 	/**Lors du relachement.
-	 * @param {Event} e 
+	 * @param {Event} e
 	 * @param {HTMLCanvasElement} node
 	 */
 	up : function(e, node){
@@ -48,7 +48,7 @@ Cursor.prototype = {
 	},
 	
 	/**Lors du mouvement.
-	 * @param {Event} e 
+	 * @param {Event} e
 	 * @param {HTMLCanvasElement} node
 	 */
 	move : function(e, node){
@@ -57,8 +57,8 @@ Cursor.prototype = {
 		}
 		
 		if(this.press){
-			this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x;
-			this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y;
+			this.x = ( e.clientX -node.innerWidth /2 ) /SCALE.x /SCALE.z;
+			this.y = ( e.clientY -node.innerHeight /2 ) /SCALE.y /SCALE.z;
 		}
 	},
 

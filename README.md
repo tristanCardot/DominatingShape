@@ -1,4 +1,4 @@
-DominatingShape
+Shape Color
 ===============
 
-A new Game :D
+A game based on color, shape and music.
