@@ -25,8 +25,7 @@ function buildGui( game){
 		buildGuiLoader( game),
 		buildGuiMenu( game),
 		buildGuiPlay( game),
-		buildGuiOptions( game),
-		buildGuiCredit( game)
+		buildGuiOptions( game)
 	];
 }
 
@@ -172,7 +171,7 @@ function buildGuiMenu( game){
 				'mouseup': this.up,
 				'mouseout': this.up,
 				'touchend' : this.up,
-				'touchcancel' : this.up,
+				'touchcancel' : this.up
 			};
 
 			for(key in l)
@@ -369,8 +368,6 @@ function buildGuiPlay( game){
 			
 			player.draw();
 			player.drawScore();
-			
-			controler.draw();
 		}
 	);
 	
@@ -403,6 +400,12 @@ function buildGuiOptions( game){
 	var gui = new Gui(
 		//OPEN
 		function(){
+			var link = document.createElement('a');
+			link.id = 'linkA';
+			link.target = '_blank';
+			link.href = 'http://rolemusic.sawsquarenoise.com/';
+			document.body.appendChild(link);
+			
 			this.inputs[0].data = game.audio.fx.volume;
 			this.inputs[1].data = game.audio.music.volume;
 			
@@ -428,6 +431,7 @@ function buildGuiOptions( game){
 		},
 		//CLOSE
 		function(){
+			document.body.removeChild( document.getElementById('linkA') );
 			game.audio.music.stop();
 			player.score = 0;
 		},
@@ -449,15 +453,17 @@ function buildGuiOptions( game){
 			player.draw();
 
 			CTX.fillStyle = '#FFF';
-			
+
 			for(var i=0; i < this.inputs.length; i++)
 				this.inputs[i].render();
 
 			CTX.textAlign = 'center';
 			CTX.fillStyle = '#FFF';
+
 			CTX.fillText('BACK', 0, 90 *SCALE.y);
+			CTX.fillText('MUSIC BY ROLEMUSIC', 0, -90 *SCALE.y, 200 *SCALE.x);
+
 			CTX.textAlign = 'start';
-			
 		}
 	);
 	
@@ -561,36 +567,3 @@ function buildGuiOptions( game){
 
 	return gui;
 }
-	
-function buildGuiCredit(){
-	var gui = new Gui(
-		//OPEN
-		function(){
-			em.reset();
-			em.pushEntity( new Entity( 80, Math.PI /2, 0,
-					SHAPE[ Math.floor( Math.random() *SHAPE.length) ],
-					COLOR[ Math.floor( Math.random() *COLOR.length) ]) );
-		},
-		//CLOSE
-		function(){
-		},
-		//UPDATE
-		function(delta){
-		},
-		//RENDER
-		function(){
-		}
-	);
-	
-	
-	
-	
-	
-	return gui;
-}
-
-
-
-
-
-

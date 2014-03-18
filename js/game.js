@@ -81,7 +81,7 @@ Game.prototype = {
 			false);
 		
 		this.guiList[GUI.LOADER].loadList({
-			music : 'Inspiration',
+			music : 'Rolemusic_ScapeFromTheCity',
 			fx : 'biup'
 		});
 		
