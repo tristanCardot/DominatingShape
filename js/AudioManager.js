@@ -33,7 +33,7 @@ var AM =(function(){
 			onerror : function(){
 				this.failed++;
 				this.total++;
-				
+
 				if( this.total === this.files.length)
 					this.finish();
 			},
@@ -80,6 +80,7 @@ var AM =(function(){
 			event.files.push( request);
 	
 			request.onload = function( e){
+				window.e = e;
 				am.onloadChannel( this, e, event, am, name);
 			};
 	
@@ -91,8 +92,14 @@ var AM =(function(){
 			request.send();
 		}
 	};
-
-	if(Ctx){		
+	
+	if(Ctx){	
+		window.getAudioData = function (){
+			window.freqByteData = new Uint8Array( game.audio.music.analyser.frequencyBinCount);
+			game.audio.music.analyser.getByteFrequencyData( freqByteData);
+			return freqByteData;
+		};
+		
 		AudioManager.prototype.onloadChannel = function( request, e, event, am, name){
 			var reader = new FileReader();
 
@@ -245,6 +252,16 @@ var AM =(function(){
 		});
 
 	}else{
+		window.getAudioData = function (){
+			window.freqByteData = new Uint8Array(16);
+			
+			for(var i=0; i<freqByteData.length; i++)
+				freqByteData[i] = Math.floor(Math.random() *256 /i);
+			
+			return freqByteData;
+		};
+		
+		
 		//Surdéfinie la basile <audio> pour le renbtrer le plus compatible possible avec un audioChannel.
 		AudioManager.prototype.onloadChannel = function( request, e, event, am, name){
 			var node = document.createElement( 'audio');
@@ -258,11 +275,17 @@ var AM =(function(){
                 node.src = readEvent.target.result;
 				am.channel[name] = node;
 				event.onload( this, e);
+				
+				reader.onload = function(readEvent){
+					window.readEvent = readEvent;
+				};
+
+				reader.readAsArrayBuffer( request.response);
             };
 
             node.type = request.response.type;
-            node.dataset.play = "false";
-
+            window.request = request;
+            
             reader.readAsDataURL( request.response);
 		};
 

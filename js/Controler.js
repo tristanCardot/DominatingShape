@@ -33,8 +33,3 @@ Controler.prototype = {
 	}
 };
 
-function getAudioData(){
-	var freqByteData = new Uint8Array( game.audio.music.analyser.frequencyBinCount);
-	game.audio.music.analyser.getByteFrequencyData( freqByteData);
-	return freqByteData;
-};
